@@ -1,0 +1,10 @@
+# this is a comment
+keep * # start with all
+#drop HLT_* 
+#keepmatch HLT_(Iso)?Mu\d+
+drop *_cleanmask
+drop *FatJet*
+drop *SubJet*
+drop *SoftActivity*
+drop *Photon*
+

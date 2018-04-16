@@ -295,6 +295,30 @@ class MuTauProducer(Module):
         if not self.isData:
             self.out.genPartFlav_2[0]              = ord(event.Tau_genPartFlav[dilepton.tau2_idx])
 
+            genvistau = Collection(event, "GenVisTau")
+
+            _drmax_ = 1000
+            gendm = -1
+            genpt = -1
+            geneta = -1
+            genphi = -1
+
+            for igvt in range(event.nGenVisTau):
+
+                _dr_ = genvistau[igvt].p4().DeltaR(taus[dilepton.tau2_idx].p4())
+            
+                if _dr_ < 0.5 and _dr_ < _drmax_:
+                    _drmax_ = _dr_
+                    gendm = event.GenVisTau_status[igvt]
+                    genpt = event.GenVisTau_pt[igvt]
+                    geneta = event.GenVisTau_eta[igvt]
+                    genphi = event.GenVisTau_phi[igvt]
+
+            self.out.gendecayMode_2[0]         = gendm
+            self.out.genvistaupt_2[0]          = genpt
+            self.out.genvistaueta_2[0]         = geneta
+            self.out.genvistauphi_2[0]         = genphi
+
 
         # event weights
         self.out.run[0]                        = event.run
@@ -314,6 +338,9 @@ class MuTauProducer(Module):
             self.out.Pileup_nPU[0]                 = event.Pileup_nPU
             self.out.Pileup_nTrueInt[0]            = event.Pileup_nTrueInt
             self.out.genWeight[0]                  = event.genWeight
+            self.out.LHE_NpLO[0]                   = event.LHE_NpLO
+            self.out.LHE_NpNLO[0]                  = event.LHE_NpNLO
+
 
         self.out.jpt_1[0]                      = -9.
         self.out.jeta_1[0]                     = -9.

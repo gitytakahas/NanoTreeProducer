@@ -10,6 +10,7 @@ parser = optparse.OptionParser()
 parser.add_option('-f', '--force', action="store_true", default=False, dest='force')
 parser.add_option('-c', '--channel', action="store", type="string", default="mutau", dest='channel')
 parser.add_option('-s', '--sample', action="store", type="string", default=None, dest='sample')
+parser.add_option('-n', '--njob', action="store", type=int, default=5, dest='njob')
 
 (options, args) = parser.parse_args() 
 
@@ -20,18 +21,22 @@ def split_seq(iterable, size):
         yield item
         item = list(itertools.islice(it, size))
         
-def getFileListDAS(dataset,instance="prod/phys03",run=-1):
-#def getFileListDAS(dataset,instance="prod/global",run=-1):
-	cmd='das_client --limit=0 --query="file dataset=%s instance=%s"'%(dataset,instance)
-	print "Executing ",cmd
-	cmd_out = getoutput( cmd )
-	tmpList = cmd_out.split(os.linesep)
-	files = []
-	for l in tmpList:
-	   if l.find(".root") != -1:
-	      files.append(l)
+def getFileListDAS(dataset):
+
+    instance = 'prod/global'
+    if dataset.find('USER')!=-1:
+        instance = 'prod/phys03'
+    
+    cmd='das_client --limit=0 --query="file dataset=%s instance=%s"'%(dataset,instance)
+    print "Executing ",cmd
+    cmd_out = getoutput( cmd )
+    tmpList = cmd_out.split(os.linesep)
+    files = []
+    for l in tmpList:
+        if l.find(".root") != -1:
+            files.append(l)
 	         
-	return files 
+    return files 
    
 def createJobs(f, outfolder,name,nchunks, channel):
   infiles = []
@@ -82,7 +87,7 @@ if __name__ == "__main__":
 
 		files = getFileListDAS(pattern)
 		print "FILELIST = ", files
-		name = pattern.split("/")[1].replace("/","")
+		name = pattern.split("/")[1].replace("/","") + '_' + pattern.split("/")[2].replace("/","")
 
 #		if sys.argv[1].find("data")!=-1: 
 #                    name = pattern.split("/")[2].replace("/","")
@@ -101,7 +106,7 @@ if __name__ == "__main__":
 		try: os.stat(outfolder+'/logs/')
 		except: os.mkdir(outfolder+'/logs/')
 
-		filelists = list(split_seq(files,10))
+		filelists = list(split_seq(files, options.njob))
 #		filelists = list(split_seq(files,1))
 
 		for f in filelists:

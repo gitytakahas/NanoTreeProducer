@@ -110,7 +110,7 @@ class TauTauProducer(Module):
         #####################################
 
 
-        if not event.HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg: 
+        if not event.HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg: 
             return False
 
 
@@ -239,7 +239,7 @@ class TauTauProducer(Module):
         self.out.puCorr_1[0]                   = event.Tau_puCorr[dilepton.tau1_idx]
         self.out.rawAntiEle_1[0]               = event.Tau_rawAntiEle[dilepton.tau1_idx]
         self.out.rawIso_1[0]                   = event.Tau_rawIso[dilepton.tau1_idx]
-        self.out.rawMVAnewDM_1[0]              = event.Tau_rawMVAnewDM[dilepton.tau1_idx]
+        self.out.rawMVAnewDM_1[0]              = event.Tau_rawMVAnewDM2017v2[dilepton.tau1_idx]
         self.out.rawMVAoldDM_1[0]              = event.Tau_rawMVAoldDM[dilepton.tau1_idx]
         self.out.charge_1[0]                   = event.Tau_charge[dilepton.tau1_idx]
         self.out.decayMode_1[0]                = event.Tau_decayMode[dilepton.tau1_idx]
@@ -250,7 +250,7 @@ class TauTauProducer(Module):
         self.out.idAntiMu_1[0]                 = ord(event.Tau_idAntiMu[dilepton.tau1_idx])
         self.out.idDecayMode_1[0]              = event.Tau_idDecayMode[dilepton.tau1_idx]
         self.out.idDecayModeNewDMs_1[0]        = event.Tau_idDecayModeNewDMs[dilepton.tau1_idx]
-        self.out.idMVAnewDM_1[0]               = ord(event.Tau_idMVAnewDM[dilepton.tau1_idx])
+        self.out.idMVAnewDM_1[0]               = ord(event.Tau_idMVAnewDM2017v2[dilepton.tau1_idx])
         self.out.idMVAoldDM_1[0]               = ord(event.Tau_idMVAoldDM[dilepton.tau1_idx])
         self.out.genPartFlav_1[0]              = ord(event.Tau_genPartFlav[dilepton.tau1_idx])
 
@@ -269,7 +269,7 @@ class TauTauProducer(Module):
         self.out.puCorr_2[0]                   = event.Tau_puCorr[dilepton.tau2_idx]
         self.out.rawAntiEle_2[0]               = event.Tau_rawAntiEle[dilepton.tau2_idx]
         self.out.rawIso_2[0]                   = event.Tau_rawIso[dilepton.tau2_idx]
-        self.out.rawMVAnewDM_2[0]              = event.Tau_rawMVAnewDM[dilepton.tau2_idx]
+        self.out.rawMVAnewDM_2[0]              = event.Tau_rawMVAnewDM2017v2[dilepton.tau2_idx]
         self.out.rawMVAoldDM_2[0]              = event.Tau_rawMVAoldDM[dilepton.tau2_idx]
         self.out.charge_2[0]                   = event.Tau_charge[dilepton.tau2_idx]
         self.out.decayMode_2[0]                = event.Tau_decayMode[dilepton.tau2_idx]
@@ -278,7 +278,7 @@ class TauTauProducer(Module):
         self.out.idAntiMu_2[0]                 = ord(event.Tau_idAntiMu[dilepton.tau2_idx])
         self.out.idDecayMode_2[0]              = event.Tau_idDecayMode[dilepton.tau2_idx]
         self.out.idDecayModeNewDMs_2[0]        = event.Tau_idDecayModeNewDMs[dilepton.tau2_idx]
-        self.out.idMVAnewDM_2[0]               = ord(event.Tau_idMVAnewDM[dilepton.tau2_idx])
+        self.out.idMVAnewDM_2[0]               = ord(event.Tau_idMVAnewDM2017v2[dilepton.tau2_idx])
         self.out.idMVAoldDM_2[0]               = ord(event.Tau_idMVAoldDM[dilepton.tau2_idx])
 #        print type(event.Tau_genPartFlav[dilepton.tau2_idx])
         self.out.genPartFlav_2[0]              = ord(event.Tau_genPartFlav[dilepton.tau2_idx])

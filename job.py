@@ -16,9 +16,6 @@ if len(sys.argv)>1:
    infile = sys.argv[1].split(',')
 else:
    print '[warning] input file not specified'
-#   infile = ["root://cms-xrd-global.cern.ch//store/user/asparker/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/TTToSemiLeptonicTuneCP5PSweights13TeV-powheg-pythia8/180130_175206/0000/80XNanoV0-TTbar_SemiLep_1.root"]
-#   infile = ["root://cms-xrd-global.cern.ch//store/mc/RunIISummer16NanoAOD/ST_s-channel_4f_InclusiveDecays_13TeV-amcatnlo-pythia8/NANOAODSIM/PUMoriond17_05Feb2018_94X_mcRun2_asymptotic_v2-v1/00000/68D82F6C-4A17-E811-90F8-24BE05C4D821.root",
-#             "root://cms-xrd-global.cern.ch//store/mc/RunIISummer16NanoAOD/ST_s-channel_4f_InclusiveDecays_13TeV-amcatnlo-pythia8/NANOAODSIM/PUMoriond17_05Feb2018_94X_mcRun2_asymptotic_v2-v1/00000/84E44D76-4A17-E811-88C2-0242AC1C0500.root"]
 
 #   infile = ["root://cms-xrd-global.cern.ch//store/user/arizzi/Nano01_17Nov17/SingleMuon/RunII2017ReReco17Nov17-94X-Nano01/180205_181602/0000/test_data_94X_NANO_432.root"]
    infile = ["root://cms-xrd-global.cern.ch//store/user/arizzi/Nano01Fall17/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X-Nano01Fall17/180205_160029/0000/test94X_NANO_70.root"]
@@ -59,6 +56,14 @@ print 'channel = ', channel
 print '-'*80
 
 
+DataType = 'mc'
+
+if infile[0].find("/SingleMuon/")!=-1 or infile[0].find("/Tau/")!=-1:
+    DataType = 'data'
+
+
+json='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/Final/Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt'
+
 ensureDir(outputDir)
 
 _postfix = outputDir + '/' + name + '_' + chunck + '_' + channel + '.root'
@@ -69,13 +74,13 @@ if channel == 'tautau':
 
     from TauTauModule import *
 
-    module2run = lambda : TauTauProducer(_postfix)
+    module2run = lambda : TauTauProducer(_postfix, DataType)
 
 elif channel == 'mutau':
 
     from MuTauModule import *
 
-    module2run = lambda : MuTauProducer(_postfix)
+    module2run = lambda : MuTauProducer(_postfix, DataType)
 
 
 else:
@@ -86,10 +91,10 @@ else:
 
 
 
-if infile[0].find("/SingleMuon/")!=-1 or infile[0].find("/Tau/")!=-1:
+if DataType=='data':
     p=PostProcessor(outputDir, infile, None, "keep_and_drop.txt", noOut=True, 
                     modules=[module2run()],provenance=False,fwkJobReport=False,
-                    jsonInput='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt', postfix=_postfix)
+                    jsonInput=json, postfix=_postfix)
 
     
 else:

@@ -73,9 +73,14 @@ class TauTauProducer(Module):
 #    def __init__(self, jetSelection):
 #        self.jetSel = jetSelection
 
-    def __init__(self, name):
+    def __init__(self, name, DataType):
 
         self.out = declareVariables(name)
+
+        if DataType=='data':
+            self.isData = True
+        else:
+            self.isData = False
 
         self.Nocut = 0
         self.Trigger = 1
@@ -252,7 +257,36 @@ class TauTauProducer(Module):
         self.out.idDecayModeNewDMs_1[0]        = event.Tau_idDecayModeNewDMs[dilepton.tau1_idx]
         self.out.idMVAnewDM_1[0]               = ord(event.Tau_idMVAnewDM2017v2[dilepton.tau1_idx])
         self.out.idMVAoldDM_1[0]               = ord(event.Tau_idMVAoldDM[dilepton.tau1_idx])
-        self.out.genPartFlav_1[0]              = ord(event.Tau_genPartFlav[dilepton.tau1_idx])
+
+
+
+        if not self.isData:
+            self.out.genPartFlav_1[0]              = ord(event.Tau_genPartFlav[dilepton.tau1_idx])
+
+            genvistau = Collection(event, "GenVisTau")
+
+            _drmax_ = 1000
+            gendm = -1
+            genpt = -1
+            geneta = -1
+            genphi = -1
+
+            for igvt in range(event.nGenVisTau):
+
+                _dr_ = genvistau[igvt].p4().DeltaR(taus[dilepton.tau1_idx].p4())
+            
+                if _dr_ < 0.5 and _dr_ < _drmax_:
+                    _drmax_ = _dr_
+                    gendm = event.GenVisTau_status[igvt]
+                    genpt = event.GenVisTau_pt[igvt]
+                    geneta = event.GenVisTau_eta[igvt]
+                    genphi = event.GenVisTau_phi[igvt]
+
+            self.out.gendecayMode_1[0]         = gendm
+            self.out.genvistaupt_1[0]          = genpt
+            self.out.genvistaueta_1[0]         = geneta
+            self.out.genvistauphi_1[0]         = genphi
+
 
 
         # tau 2
@@ -281,7 +315,34 @@ class TauTauProducer(Module):
         self.out.idMVAnewDM_2[0]               = ord(event.Tau_idMVAnewDM2017v2[dilepton.tau2_idx])
         self.out.idMVAoldDM_2[0]               = ord(event.Tau_idMVAoldDM[dilepton.tau2_idx])
 #        print type(event.Tau_genPartFlav[dilepton.tau2_idx])
-        self.out.genPartFlav_2[0]              = ord(event.Tau_genPartFlav[dilepton.tau2_idx])
+
+        if not self.isData:
+            self.out.genPartFlav_2[0]              = ord(event.Tau_genPartFlav[dilepton.tau2_idx])
+
+            genvistau = Collection(event, "GenVisTau")
+
+            _drmax_ = 1000
+            gendm = -1
+            genpt = -1
+            geneta = -1
+            genphi = -1
+
+            for igvt in range(event.nGenVisTau):
+
+                _dr_ = genvistau[igvt].p4().DeltaR(taus[dilepton.tau2_idx].p4())
+            
+                if _dr_ < 0.5 and _dr_ < _drmax_:
+                    _drmax_ = _dr_
+                    gendm = event.GenVisTau_status[igvt]
+                    genpt = event.GenVisTau_pt[igvt]
+                    geneta = event.GenVisTau_eta[igvt]
+                    genphi = event.GenVisTau_phi[igvt]
+
+            self.out.gendecayMode_2[0]         = gendm
+            self.out.genvistaupt_2[0]          = genpt
+            self.out.genvistaueta_2[0]         = geneta
+            self.out.genvistauphi_2[0]         = genphi
+
 
 
         # event weights
@@ -297,10 +358,14 @@ class TauTauProducer(Module):
         self.out.MET_covXX[0]                  = event.MET_covXX
         self.out.MET_covXY[0]                  = event.MET_covXY
         self.out.MET_covYY[0]                  = event.MET_covYY
-        self.out.Pileup_nPU[0]                 = event.Pileup_nPU
-        self.out.Pileup_nTrueInt[0]            = event.Pileup_nTrueInt
         self.out.fixedGridRhoFastjetAll[0]     = event.fixedGridRhoFastjetAll
-        self.out.genWeight[0]                  = event.genWeight
+
+        if not self.isData:
+            self.out.Pileup_nPU[0]                 = event.Pileup_nPU
+            self.out.Pileup_nTrueInt[0]            = event.Pileup_nTrueInt
+            self.out.genWeight[0]                  = event.genWeight
+            self.out.LHE_NpLO[0]                   = event.LHE_NpLO
+            self.out.LHE_NpNLO[0]                  = event.LHE_NpNLO
 
         self.out.jpt_1[0]                      = -9.
         self.out.jeta_1[0]                     = -9.

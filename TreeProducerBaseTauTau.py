@@ -47,6 +47,10 @@ class TreeProducerBaseTauTau(object):
         self.idMVAnewDM_1               = num.zeros(1, dtype=int)
         self.idMVAoldDM_1               = num.zeros(1, dtype=int)
         self.genPartFlav_1              = num.zeros(1, dtype=int)
+        self.gendecayMode_1             = num.zeros(1, dtype=int)
+        self.genvistaupt_1              = num.zeros(1, dtype=float)
+        self.genvistaueta_1             = num.zeros(1, dtype=float)
+        self.genvistauphi_1             = num.zeros(1, dtype=float)
         
 
         
@@ -75,6 +79,11 @@ class TreeProducerBaseTauTau(object):
         self.tree.Branch('idMVAnewDM_1'              , self.idMVAnewDM_1, 'idMVAnewDM_1/I')
         self.tree.Branch('idMVAoldDM_1'              , self.idMVAoldDM_1, 'idMVAoldDM_1/I')
         self.tree.Branch('genPartFlav_1'             , self.genPartFlav_1, 'genPartFlav_1/I')
+        self.tree.Branch('gendecayMode_1'             , self.gendecayMode_1, 'gendecayMode_1/I')
+        self.tree.Branch('genvistaupt_1'             , self.genvistaupt_1, 'genvistaupt_1/D')
+        self.tree.Branch('genvistaueta_1'             , self.genvistaueta_1, 'genvistaueta_1/D')
+        self.tree.Branch('genvistauphi_1'             , self.genvistauphi_1, 'genvistauphi_1/D')
+
 
 
 
@@ -107,6 +116,10 @@ class TreeProducerBaseTauTau(object):
         self.idMVAnewDM_2               = num.zeros(1, dtype=int)
         self.idMVAoldDM_2               = num.zeros(1, dtype=int)
         self.genPartFlav_2              = num.zeros(1, dtype=int)
+        self.gendecayMode_2             = num.zeros(1, dtype=int)
+        self.genvistaupt_2              = num.zeros(1, dtype=float)
+        self.genvistaueta_2             = num.zeros(1, dtype=float)
+        self.genvistauphi_2             = num.zeros(1, dtype=float)
 
 
         self.tree.Branch('pt_2'                      , self.pt_2, 'pt_2/D')
@@ -134,6 +147,11 @@ class TreeProducerBaseTauTau(object):
         self.tree.Branch('idMVAnewDM_2'              , self.idMVAnewDM_2, 'idMVAnewDM_2/I')
         self.tree.Branch('idMVAoldDM_2'              , self.idMVAoldDM_2, 'idMVAoldDM_2/I')
         self.tree.Branch('genPartFlav_2'             , self.genPartFlav_2, 'genPartFlav_2/I')
+        self.tree.Branch('gendecayMode_2'             , self.gendecayMode_2, 'gendecayMode_2/I')
+        self.tree.Branch('genvistaupt_2'             , self.genvistaupt_2, 'genvistaupt_2/D')
+        self.tree.Branch('genvistaueta_2'             , self.genvistaueta_2, 'genvistaueta_2/D')
+        self.tree.Branch('genvistauphi_2'             , self.genvistauphi_2, 'genvistauphi_2/D')
+
 
 
         ##################
@@ -155,6 +173,8 @@ class TreeProducerBaseTauTau(object):
         self.Pileup_nTrueInt            = num.zeros(1, dtype=int)
         self.fixedGridRhoFastjetAll     = num.zeros(1, dtype=float)
         self.genWeight                  = num.zeros(1, dtype=float)
+        self.LHE_NpLO                   = num.zeros(1, dtype=int)
+        self.LHE_NpNLO                  = num.zeros(1, dtype=int)
 
         self.tree.Branch('run'                       , self.run, 'run/I')
         self.tree.Branch('luminosityBlock'           , self.luminosityBlock, 'luminosityBlock/I')
@@ -168,6 +188,9 @@ class TreeProducerBaseTauTau(object):
         self.tree.Branch('Pileup_nTrueInt'           , self.Pileup_nTrueInt, 'Pileup_nTrueInt/I')
         self.tree.Branch('fixedGridRhoFastjetAll'    , self.fixedGridRhoFastjetAll, 'fixedGridRhoFastjetAll/D')
         self.tree.Branch('genWeight'                 , self.genWeight, 'genWeight/D')
+        self.tree.Branch('LHE_NpLO'                  , self.LHE_NpLO, 'LHE_NpLO/I')
+        self.tree.Branch('LHE_NpNLO'                 , self.LHE_NpNLO, 'LHE_NpNLO/I')
+
 
 
         # -- additionals from analyzers

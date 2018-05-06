@@ -73,11 +73,14 @@ class MuTauProducer(Module):
 #    def __init__(self, jetSelection):
 #        self.jetSel = jetSelection
 
-    def __init__(self, name):
+    def __init__(self, name, DataType):
 
         self.out = declareVariables(name)
 
-        self.isData = name.find('SingleMuon')!=-1
+        if DataType=='data':
+            self.isData = True
+        else:
+            self.isData = False
 
         self.Nocut = 0
         self.Trigger = 1

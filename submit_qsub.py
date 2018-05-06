@@ -10,7 +10,7 @@ parser = optparse.OptionParser()
 parser.add_option('-f', '--force', action="store_true", default=False, dest='force')
 parser.add_option('-c', '--channel', action="store", type="string", default="mutau", dest='channel')
 parser.add_option('-s', '--sample', action="store", type="string", default=None, dest='sample')
-parser.add_option('-n', '--njob', action="store", type=int, default=5, dest='njob')
+parser.add_option('-n', '--njob', action="store", type=int, default=2, dest='njob')
 
 (options, args) = parser.parse_args() 
 
@@ -86,13 +86,15 @@ if __name__ == "__main__":
                         if pattern.find(options.sample)==-1: continue
 
 		files = getFileListDAS(pattern)
-		print "FILELIST = ", files
+#		print "FILELIST = ", files
 		name = pattern.split("/")[1].replace("/","") + '_' + pattern.split("/")[2].replace("/","")
 
 #		if sys.argv[1].find("data")!=-1: 
 #                    name = pattern.split("/")[2].replace("/","")
 
+                print 
 		print "creating job file " ,'joblist/joblist%s.txt'%name
+                print 
 		try: os.stat('joblist/')
 		except: os.mkdir('joblist/')
 		jobList = 'joblist/joblist%s_%s.txt' % (name, options.channel)
@@ -110,7 +112,7 @@ if __name__ == "__main__":
 #		filelists = list(split_seq(files,1))
 
 		for f in filelists:
-			print "FILES = ",f
+#			print "FILES = ",f
 			createJobs(f,outfolder,name,nChunks, options.channel)
 			nChunks = nChunks+1
 		
@@ -121,7 +123,7 @@ if __name__ == "__main__":
                     submitJobs(jobList,nChunks, outfolder, batchSystem)
 
                 else:
-                    submit = raw_input("Do you also want to submit the jobs to the batch system? [y/n] ")
+                    submit = raw_input("Do you also want to submit " + str(nChunks) + " jobs to the batch system? [y/n] ")
 
                     if submit == 'y' or submit=='Y':
                         submitJobs(jobList,nChunks, outfolder, batchSystem)

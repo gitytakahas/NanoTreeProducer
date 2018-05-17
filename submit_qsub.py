@@ -63,75 +63,85 @@ def submitJobs(jobList, nchunks, outfolder, batchSystem):
 
 if __name__ == "__main__":
 
-	batchSystem = 'psibatch_runner.sh'
+    batchSystem = 'psibatch_runner.sh'
 
         # read samples
-        patterns = []
+    patterns = []
         
-        for line in open('samples.cfg', 'r'):
+    for line in open('samples.cfg', 'r'):
 
                         
-            if line.find('#')!=-1: continue
-            if line.count('/')!=3:
-                continue 
+        if line.find('#')!=-1: continue
+        if line.count('/')!=3:
+            continue 
 
 
-            patterns.append(line.rstrip())
+        patterns.append(line.rstrip())
 
 
 	
-	for pattern in patterns:
+    for pattern in patterns:
+
+        if options.channel=='tautau':
+            if pattern.find('/SingleMuon')!=-1 or pattern.find('/SingleElectron')!=-1: continue
+
+        if options.channel in ['mutau', 'mumu']:
+            if pattern.find('/SingleElectron')!=-1 or pattern.find('/Tau')!=-1: continue
+
+        if options.channel=='eletau':
+            if pattern.find('/SingleMuon')!=-1 or pattern.find('/Tau')!=-1: continue
+
 
             
-                if options.sample!=None:
-                        if pattern.find(options.sample)==-1: continue
+        if options.sample!=None:
+            if pattern.find(options.sample)==-1: continue
 
-		files = getFileListDAS(pattern)
+       	files = getFileListDAS(pattern)
 #		print "FILELIST = ", files
 #                print pattern.split('/')
 
-		name = pattern.split("/")[1].replace("/","") + '__' + pattern.split("/")[2].replace("/","") + '__' + pattern.split("/")[3].replace("/","")
+        name = pattern.split("/")[1].replace("/","") + '__' + pattern.split("/")[2].replace("/","") + '__' + pattern.split("/")[3].replace("/","")
 
 #		if sys.argv[1].find("data")!=-1: 
 #                    name = pattern.split("/")[2].replace("/","")
-
-                print 
-		print "creating job file " ,'joblist/joblist%s.txt'%name
-                print 
-		try: os.stat('joblist/')
-		except: os.mkdir('joblist/')
-		jobList = 'joblist/joblist%s_%s.txt' % (name, options.channel)
-		jobs = open(jobList, 'w')
-		nChunks = 0
-
-                outfolder = name
-
-		try: os.stat(outfolder)
-		except: os.mkdir(outfolder)
-		try: os.stat(outfolder+'/logs/')
-		except: os.mkdir(outfolder+'/logs/')
-
-		filelists = list(split_seq(files, options.njob))
+        
+        print 
+        print "creating job file " ,'joblist/joblist%s.txt'%name
+        print 
+        try: os.stat('joblist/')
+        except: os.mkdir('joblist/')
+        jobList = 'joblist/joblist%s_%s.txt' % (name, options.channel)
+        jobs = open(jobList, 'w')
+        nChunks = 0
+        
+        outfolder = name
+        
+        try: os.stat(outfolder)
+        except: os.mkdir(outfolder)
+        try: os.stat(outfolder+'/logs/')
+        except: os.mkdir(outfolder+'/logs/')
+        
+        filelists = list(split_seq(files, options.njob))
 #		filelists = list(split_seq(files,1))
-
-		for f in filelists:
+        
+        for f in filelists:
 #			print "FILES = ",f
-			createJobs(f,outfolder,name,nChunks, options.channel)
-			nChunks = nChunks+1
-		
-		jobs.close()
+            createJobs(f,outfolder,name,nChunks, options.channel)
+            nChunks = nChunks+1
+            
+        jobs.close()
 
 
-                if options.force:
-                    submitJobs(jobList,nChunks, outfolder, batchSystem)
+        if options.force:
+            submitJobs(jobList,nChunks, outfolder, batchSystem)
 
-                else:
-                    submit = raw_input("Do you also want to submit " + str(nChunks) + " jobs to the batch system? [y/n] ")
+        else:
+            submit = raw_input("Do you also want to submit " + str(nChunks) + " jobs to the batch system? [y/n] ")
 
-                    if submit == 'y' or submit=='Y':
-                        submitJobs(jobList,nChunks, outfolder, batchSystem)
-                    else:
-                        print "Not submitting jobs"
+            if submit == 'y' or submit=='Y':
+                submitJobs(jobList,nChunks, outfolder, batchSystem)
+            else:
+                print "Not submitting jobs"
 		
 		
 		

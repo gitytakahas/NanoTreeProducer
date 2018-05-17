@@ -4,18 +4,18 @@ import numpy as num
 
 from TreeProducerCommon import *
 
-class TreeProducerMuTau(TreeProducerCommon):
+class TreeProducerEleTau(TreeProducerCommon):
 
     def __init__(self, name):
 
-        super(TreeProducerMuTau, self).__init__(name)
+        super(TreeProducerEleTau, self).__init__(name)
         
-        print 'TreeProducerMuTau is called', name
+        print 'TreeProducerEleTau is called', name
 
 
         # trees
         ##################
-        # muon
+        # electron
         ##################
 
         self.pt_1                       = num.zeros(1, dtype=float)
@@ -24,9 +24,14 @@ class TreeProducerMuTau(TreeProducerCommon):
         self.mass_1                     = num.zeros(1, dtype=float)
         self.dxy_1                      = num.zeros(1, dtype=float)
         self.dz_1                       = num.zeros(1, dtype=float)        
-        self.pfRelIso04_all_1           = num.zeros(1, dtype=float)
         self.q_1                        = num.zeros(1, dtype=int)
+        self.pfRelIso03_all_1           = num.zeros(1, dtype=float)
         self.genPartFlav_1              = num.zeros(1, dtype=int)
+        self.cutBased_1                 = num.zeros(1, dtype=int)
+        self.mvaFall17Iso_1             = num.zeros(1, dtype=float)
+        self.mvaFall17Iso_WP80_1        = num.zeros(1, dtype=int)
+        self.mvaFall17Iso_WP90_1        = num.zeros(1, dtype=int)
+        self.mvaFall17Iso_WPL_1        = num.zeros(1, dtype=int)
 
         self.tree.Branch('pt_1'                      , self.pt_1, 'pt_1/D')
         self.tree.Branch('eta_1'                     , self.eta_1, 'eta_1/D')
@@ -35,8 +40,13 @@ class TreeProducerMuTau(TreeProducerCommon):
         self.tree.Branch('dxy_1'                     , self.dxy_1, 'dxy_1/D')
         self.tree.Branch('dz_1'                      , self.dz_1, 'dz_1/D')
         self.tree.Branch('q_1'                       , self.q_1, 'q_1/I')
-        self.tree.Branch('pfRelIso04_all_1'          , self.pfRelIso04_all_1, 'pfRelIso04_all_1/D')
+        self.tree.Branch('pfRelIso03_all_1'          , self.pfRelIso03_all_1, 'pfRelIso04_all_1/D')
         self.tree.Branch('genPartFlav_1'             , self.genPartFlav_1, 'genPartFlav_1/I')
+        self.tree.Branch('cutBased_1'                , self.cutBased_1, 'cutBased_1/I')
+        self.tree.Branch('mvaFall17Iso_1'            , self.mvaFall17Iso_1, 'mvaFall17Iso_1/D')
+        self.tree.Branch('mvaFall17Iso_WP80_1'       , self.mvaFall17Iso_WP80_1, 'mvaFall17Iso_WP80_1/I')
+        self.tree.Branch('mvaFall17Iso_WP90_1'       , self.mvaFall17Iso_WP90_1, 'mvaFall17Iso_WP90_1/I')
+        self.tree.Branch('mvaFall17Iso_WPL_1'       , self.mvaFall17Iso_WPL_1, 'mvaFall17Iso_WPL_1/I')
 
         ##################
         # tau 2

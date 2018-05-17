@@ -8,8 +8,10 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import Pos
 
 from TauTauModule import *
 
-channel = 'tautau'
+#channel = 'tautau'
 #channel = 'mutau'
+#channel = 'eletau'
+channel = 'mumu'
 DataType = 'mc'
 #DataType = 'data'
 
@@ -49,6 +51,18 @@ elif channel == 'mutau':
     from MuTauModule import *
 
     module2run = lambda : MuTauProducer(_postfix, DataType)
+
+elif channel == 'eletau':
+
+    from EleTauModule import *
+
+    module2run = lambda : EleTauProducer(_postfix, DataType)
+
+elif channel == 'mumu':
+
+    from MuMuModule import *
+
+    module2run = lambda : MuMuProducer(_postfix, DataType)
 
 else:
     print 'Invalid channel name'

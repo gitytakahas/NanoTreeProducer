@@ -27,7 +27,8 @@ def getFileListDAS(dataset):
     if dataset.find('USER')!=-1:
         instance = 'prod/phys03'
     
-    cmd='das_client --limit=0 --query="file dataset=%s instance=%s"'%(dataset,instance)
+#    cmd='das_client --limit=0 --query="file dataset=%s instance=%s"'%(dataset,instance)
+    cmd='das_client --limit=0 --query="file dataset=%s instance=%s status=*"'%(dataset,instance)
     print "Executing ",cmd
     cmd_out = getoutput( cmd )
     tmpList = cmd_out.split(os.linesep)

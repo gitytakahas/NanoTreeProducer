@@ -21,26 +21,23 @@ parser.add_option('-f', '--filename', action="store", type="string", default=Non
 # https://root.cern.ch/root/html/tutorials/tree/copytree3.C.html
 # to get branch channel with string "channel": getattr(oldtree,"channel")
 
-# /scratch/ineuteli/SFrameAnalysis/AnalysisOutput/
-# /shome/ineuteli/analysis/SFrameAnalysis/AnalysisOutput/
-
-#DIR         = "/mnt/t3nfs01/data01/shome/ytakahas/work/Leptoquark/CMSSW_9_4_4/src/PhysicsTools/NanoAODTools/NanoTreeProducer"
-
 
 verbosity   = 0
 
 channel = options.channel
-#channel = 'etau'
 
-#selection = 'extraelec_veto == 0 && extramuon_veto == 0 && againstElectronVLooseMVA6_2 == 1 && againstMuonLoose3_2 == 1'
-selection = 'idDecayMode_1==1 && idDecayMode_2==1 && idMVAoldDM2017v2_1 >= 3 && idMVAoldDM2017v2_2 >= 3'
-#againstElectronVLooseMVA6_2 == 1 && againstMuonLoose3_2 == 1'
-
-channels  = []   #"mutau",
+channels  = []
 
 channels.append(channel)
-#        "etau"
-#        ]
+
+
+selection = '1'
+
+if options.channel=='tautau':
+    selection = 'idDecayMode_1==1 && idDecayMode_2==1 && idMVAoldDM2017v2_1 >= 3 && idMVAoldDM2017v2_2 >= 3'
+
+elif options.channel=='mutau':
+    selection = 'idDecayMode_2==1 && idMVAoldDM2017v2_2 >= 3 && pfRelIso04_all_1 < 0.1'
 
 
 print '============================='
@@ -48,7 +45,6 @@ print 'channel = ', channel
 print 'filename = ', options.filename
 print 'skim selection = ', selection
 print '============================='
-
 
 
     ###########

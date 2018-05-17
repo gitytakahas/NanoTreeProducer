@@ -283,8 +283,6 @@ class MuTauProducer(Module):
         self.out.event[0]                      = event.event & 0xffffffffffffffff
         self.out.MET_pt[0]                     = event.MET_pt
         self.out.MET_phi[0]                    = event.MET_phi
-        self.out.GenMET_pt[0]                  = event.GenMET_pt
-        self.out.GenMET_phi[0]                 = event.GenMET_phi
         self.out.PuppiMET_pt[0]                = event.PuppiMET_pt
         self.out.PuppiMET_phi[0]               = event.PuppiMET_phi
         self.out.MET_significance[0]           = event.MET_significance
@@ -296,6 +294,8 @@ class MuTauProducer(Module):
         self.out.PV_npvsGood[0]                = event.PV_npvsGood
 
         if not self.isData:
+            self.out.GenMET_pt[0]                  = event.GenMET_pt
+            self.out.GenMET_phi[0]                 = event.GenMET_phi
             self.out.Pileup_nPU[0]                 = event.Pileup_nPU
             self.out.Pileup_nTrueInt[0]            = event.Pileup_nTrueInt
             self.out.genWeight[0]                  = event.genWeight

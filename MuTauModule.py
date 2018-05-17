@@ -1,67 +1,11 @@
 import ROOT
-ROOT.PyConfig.IgnoreCommandLineOptions = True
-import numpy as num 
-
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection 
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
-from TreeProducerBaseMuTau import *
-
-class DiLeptonBasicClass:
-    def __init__(self, tau1_idx, tau1_pt, tau1_iso, tau2_idx, tau2_pt, tau2_iso):
-
-        self.tau1_pt = tau1_pt
-        self.tau2_pt = tau2_pt
-        self.tau1_iso = tau1_iso
-        self.tau2_iso = tau2_iso
-        self.tau1_idx = tau1_idx
-        self.tau2_idx = tau2_idx
-        
-
-def bestDiLepton(diLeptons):
+from TreeProducerMuTau import *
 
 
-    if len(diLeptons)==1:
-        return diLeptons[0]
-
-#    print '# of diLeptons =', len(diLeptons)
-
-#    for ii in diLeptons:
-#        print 'tau1 idx =', ii.tau1_idx
-#        print 'tau2 idx =', ii.tau2_idx
-#        print 'tau1 iso =', ii.tau1_iso
-#        print 'tau2 iso = ', ii.tau2_iso
-#        print 'tau1 pt = ', ii.tau1_pt
-#        print 'tau2 pt = ', ii.tau2_pt
-#        print '-'*80
-
-    least_iso_highest_pt = lambda dl: (-dl.tau1_iso, -dl.tau1_pt, -dl.tau2_iso, -dl.tau2_pt)
-    return sorted(diLeptons, key=lambda dl: least_iso_highest_pt(dl), reverse=False)[0]
-
-
-
-def deltaR2( e1, p1, e2, p2):
-    de = e1 - e2
-    dp = deltaPhi(p1, p2)
-    return de*de + dp*dp
-
-
-def deltaR( *args ):
-    return math.sqrt( deltaR2(*args) )
-
-
-def deltaPhi( p1, p2):
-    '''Computes delta phi, handling periodic limit conditions.'''
-    res = p1 - p2
-    while res > math.pi:
-        res -= 2*math.pi
-    while res < -math.pi:
-        res += 2*math.pi
-    return res
-
-
-
-class declareVariables(TreeProducerBaseMuTau):
+class declareVariables(TreeProducerMuTau):
     
     def __init__(self, name):
 
@@ -87,7 +31,7 @@ class MuTauProducer(Module):
         self.GoodMuons = 2
         self.GoodTaus = 3
         self.GoodDiLepton = 4
-
+        self.TotalWeighted = 15
 
     def beginJob(self):
         pass
@@ -114,10 +58,15 @@ class MuTauProducer(Module):
         self.out.h_cutflow.Fill(self.Nocut)
         #####################################
 
+        #####################################
+        if not self.isData:
+            self.out.h_cutflow.Fill(self.TotalWeighted, event.genWeight)
+        else:
+            self.out.h_cutflow.Fill(self.TotalWeighted, 1.)
+        #####################################
 
         if not event.HLT_IsoMu27:
             return False
-
 
         #####################################
         self.out.h_cutflow.Fill(self.Trigger)
@@ -282,8 +231,10 @@ class MuTauProducer(Module):
         self.out.puCorr_2[0]                   = event.Tau_puCorr[dilepton.tau2_idx]
         self.out.rawAntiEle_2[0]               = event.Tau_rawAntiEle[dilepton.tau2_idx]
         self.out.rawIso_2[0]                   = event.Tau_rawIso[dilepton.tau2_idx]
-        self.out.rawMVAnewDM_2[0]              = event.Tau_rawMVAnewDM2017v2[dilepton.tau2_idx]
+        self.out.rawMVAnewDM2017v2_2[0]        = event.Tau_rawMVAnewDM2017v2[dilepton.tau2_idx]
         self.out.rawMVAoldDM_2[0]              = event.Tau_rawMVAoldDM[dilepton.tau2_idx]
+        self.out.rawMVAoldDM2017v1_2[0]        = event.Tau_rawMVAoldDM2017v1[dilepton.tau2_idx]
+        self.out.rawMVAoldDM2017v2_2[0]        = event.Tau_rawMVAoldDM2017v2[dilepton.tau2_idx]
         self.out.q_2[0]                        = event.Tau_charge[dilepton.tau2_idx]
         self.out.decayMode_2[0]                = event.Tau_decayMode[dilepton.tau2_idx]
         self.out.rawAntiEleCat_2[0]            = event.Tau_rawAntiEleCat[dilepton.tau2_idx]
@@ -291,8 +242,11 @@ class MuTauProducer(Module):
         self.out.idAntiMu_2[0]                 = ord(event.Tau_idAntiMu[dilepton.tau2_idx])
         self.out.idDecayMode_2[0]              = event.Tau_idDecayMode[dilepton.tau2_idx]
         self.out.idDecayModeNewDMs_2[0]        = event.Tau_idDecayModeNewDMs[dilepton.tau2_idx]
-        self.out.idMVAnewDM_2[0]               = ord(event.Tau_idMVAnewDM2017v2[dilepton.tau2_idx])
+        self.out.idMVAnewDM2017v2_2[0]         = ord(event.Tau_idMVAnewDM2017v2[dilepton.tau2_idx])
         self.out.idMVAoldDM_2[0]               = ord(event.Tau_idMVAoldDM[dilepton.tau2_idx])
+        self.out.idMVAoldDM2017v1_2[0]         = ord(event.Tau_idMVAoldDM2017v1[dilepton.tau2_idx])
+        self.out.idMVAoldDM2017v2_2[0]         = ord(event.Tau_idMVAoldDM2017v2[dilepton.tau2_idx])
+
 #        print type(event.Tau_genPartFlav[dilepton.tau2_idx])
 
         if not self.isData:
@@ -329,6 +283,8 @@ class MuTauProducer(Module):
         self.out.event[0]                      = event.event & 0xffffffffffffffff
         self.out.MET_pt[0]                     = event.MET_pt
         self.out.MET_phi[0]                    = event.MET_phi
+        self.out.GenMET_pt[0]                  = event.GenMET_pt
+        self.out.GenMET_phi[0]                 = event.GenMET_phi
         self.out.PuppiMET_pt[0]                = event.PuppiMET_pt
         self.out.PuppiMET_phi[0]               = event.PuppiMET_phi
         self.out.MET_significance[0]           = event.MET_significance
@@ -336,24 +292,27 @@ class MuTauProducer(Module):
         self.out.MET_covXY[0]                  = event.MET_covXY
         self.out.MET_covYY[0]                  = event.MET_covYY
         self.out.fixedGridRhoFastjetAll[0]     = event.fixedGridRhoFastjetAll
+        self.out.PV_npvs[0]                    = event.PV_npvs
+        self.out.PV_npvsGood[0]                = event.PV_npvsGood
 
         if not self.isData:
             self.out.Pileup_nPU[0]                 = event.Pileup_nPU
             self.out.Pileup_nTrueInt[0]            = event.Pileup_nTrueInt
             self.out.genWeight[0]                  = event.genWeight
-            self.out.LHE_NpLO[0]                   = event.LHE_NpLO
-            self.out.LHE_NpNLO[0]                  = event.LHE_NpNLO
+            self.out.LHE_Njets[0]                  = event.LHE_Njets
 
 
         self.out.jpt_1[0]                      = -9.
         self.out.jeta_1[0]                     = -9.
         self.out.jphi_1[0]                     = -9.
         self.out.jcsvv2_1[0]                   = -9.
+        self.out.jdeepb_1[0]                   = -9.
 
         self.out.jpt_2[0]                      = -9.
         self.out.jeta_2[0]                     = -9.
         self.out.jphi_2[0]                     = -9.
         self.out.jcsvv2_2[0]                   = -9.
+        self.out.jdeepb_2[0]                   = -9.
 
 
         if len(jetIds)>0:
@@ -361,12 +320,14 @@ class MuTauProducer(Module):
             self.out.jeta_1[0]                     = event.Jet_eta[jetIds[0]]
             self.out.jphi_1[0]                     = event.Jet_phi[jetIds[0]]
             self.out.jcsvv2_1[0]                   = event.Jet_btagCSVV2[jetIds[0]]
+            self.out.jdeepb_1[0]                   = event.Jet_btagDeepB[jetIds[0]]
 
         if len(jetIds)>1:
             self.out.jpt_2[0]                      = event.Jet_pt[jetIds[1]]
             self.out.jeta_2[0]                     = event.Jet_eta[jetIds[1]]
             self.out.jphi_2[0]                     = event.Jet_phi[jetIds[1]]
             self.out.jcsvv2_2[0]                   = event.Jet_btagCSVV2[jetIds[1]]
+            self.out.jdeepb_2[0]                   = event.Jet_btagDeepB[jetIds[1]]
 
 
         self.out.njets[0]                      = len(jetIds)
@@ -381,6 +342,38 @@ class MuTauProducer(Module):
         self.out.pt_tt[0]                      = (muons[dilepton.tau1_idx].p4() + taus[dilepton.tau2_idx].p4()).Pt()
         
         self.out.dR_ll[0]                      = muons[dilepton.tau1_idx].p4().DeltaR(taus[dilepton.tau2_idx].p4())
+        self.out.dphi_ll[0]                    = deltaPhi(self.out.phi_1[0], self.out.phi_2[0])
+
+
+        # pzeta calculation
+
+        leg1 = ROOT.TVector3(muons[dilepton.tau1_idx].p4().Px(), muons[dilepton.tau1_idx].p4().Py(), 0.)
+        leg2 = ROOT.TVector3(taus[dilepton.tau2_idx].p4().Px(), taus[dilepton.tau2_idx].p4().Py(), 0.)
+        
+#        print 'leg1 px,py,pz = ', taus[dilepton.tau1_idx].p4().Px(), taus[dilepton.tau1_idx].p4().Py(), '0'
+#        print 'leg2 px,py,pz = ', taus[dilepton.tau2_idx].p4().Px(), taus[dilepton.tau2_idx].p4().Py(), '0'
+
+        met_tlv = ROOT.TLorentzVector()
+        met_tlv.SetPxPyPzE(self.out.MET_pt[0]*math.cos(self.out.MET_phi[0]), 
+                           self.out.MET_pt[0]*math.cos(self.out.MET_phi[0]),
+                           0, 
+                           self.out.MET_pt[0])
+
+#        print self.out.MET_pt[0]*math.cos(self.out.MET_phi[0]), self.out.MET_pt[0]*math.cos(self.out.MET_phi[0]), '0', self.out.MET_pt[0]
+
+        metleg = met_tlv.Vect()
+        zetaAxis = ROOT.TVector3(leg1.Unit() + leg2.Unit()).Unit()
+        pZetaVis_ = leg1*zetaAxis + leg2*zetaAxis
+        pZetaMET_ = metleg*zetaAxis
+        
+#        print 'pZetaVis = ', pZetaVis_, ' pZetaMET = ', pZetaMET_                                                                                           
+
+        self.out.pzetamiss[0]  = pZetaMET_
+        self.out.pzetavis[0]   = pZetaVis_
+        self.out.pzeta_disc[0] = pZetaMET_ - 0.5*pZetaVis_
+
+
+
 
         self.out.tree.Fill() 
 

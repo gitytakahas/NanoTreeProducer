@@ -10,7 +10,7 @@ parser = optparse.OptionParser()
 parser.add_option('-f', '--force', action="store_true", default=False, dest='force')
 parser.add_option('-c', '--channel', action="store", type="string", default="mutau", dest='channel')
 parser.add_option('-s', '--sample', action="store", type="string", default=None, dest='sample')
-parser.add_option('-n', '--njob', action="store", type=int, default=2, dest='njob')
+parser.add_option('-n', '--njob', action="store", type=int, default=1, dest='njob')
 
 (options, args) = parser.parse_args() 
 
@@ -87,7 +87,9 @@ if __name__ == "__main__":
 
 		files = getFileListDAS(pattern)
 #		print "FILELIST = ", files
-		name = pattern.split("/")[1].replace("/","") + '_' + pattern.split("/")[2].replace("/","")
+#                print pattern.split('/')
+
+		name = pattern.split("/")[1].replace("/","") + '__' + pattern.split("/")[2].replace("/","") + '__' + pattern.split("/")[3].replace("/","")
 
 #		if sys.argv[1].find("data")!=-1: 
 #                    name = pattern.split("/")[2].replace("/","")

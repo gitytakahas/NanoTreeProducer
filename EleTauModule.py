@@ -19,6 +19,7 @@ class EleTauProducer(Module):
 
     def __init__(self, name, DataType):
 
+        self.name = name
         self.out = declareVariables(name)
 
         if DataType=='data':
@@ -76,20 +77,13 @@ class EleTauProducer(Module):
         
         for ielectron in range(event.nElectron):
 
-            print 'step1'
             if event.Electron_pt[ielectron] < 33: continue
-            print 'step2'
             if abs(event.Electron_eta[ielectron]) > 2.1: continue
-            print 'step3'
             if abs(event.Electron_dz[ielectron]) > 0.2: continue
-            print 'step4'
             if abs(event.Electron_dxy[ielectron]) > 0.045: continue
-            print 'step5'
             if event.Electron_convVeto[ielectron] !=1: continue
-
-            print 'step6 -> ', ord(event.Electron_lostHits[ielectron])
             if ord(event.Electron_lostHits[ielectron]) > 1: continue
-            print 'step7'
+            if event.Electron_mvaFall17Iso_WP80[ielectron] < 0.5: continue
 
             idx_goodelectrons.append(ielectron)
 
@@ -386,7 +380,8 @@ class EleTauProducer(Module):
         self.out.pzeta_disc[0] = pZetaMET_ - 0.5*pZetaVis_
 
 
-
+        # extra lepton vetos
+        self.out.extramuon_veto[0], self.out.extraelec_veto[0], self.out.dilepton_veto[0]  = extraLeptonVetos(event, [-1], [dilepton.tau1_idx], self.name)
 
         self.out.tree.Fill() 
 

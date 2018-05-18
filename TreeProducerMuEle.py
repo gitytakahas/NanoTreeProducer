@@ -4,18 +4,18 @@ import numpy as num
 
 from TreeProducerCommon import *
 
-class TreeProducerMuMu(TreeProducerCommon):
+class TreeProducerMuEle(TreeProducerCommon):
 
     def __init__(self, name):
 
-        super(TreeProducerMuMu, self).__init__(name)
+        super(TreeProducerMuEle, self).__init__(name)
         
-        print 'TreeProducerMuMu is called', name
+        print 'TreeProducerMuEle is called', name
 
 
         # trees
         ##################
-        # muon 1
+        # muon
         ##################
 
         self.pt_1                       = num.zeros(1, dtype=float)
@@ -38,8 +38,9 @@ class TreeProducerMuMu(TreeProducerCommon):
         self.tree.Branch('pfRelIso04_all_1'          , self.pfRelIso04_all_1, 'pfRelIso04_all_1/D')
         self.tree.Branch('genPartFlav_1'             , self.genPartFlav_1, 'genPartFlav_1/I')
 
+
         ##################
-        # muon 2
+        # electron
         ##################
 
         self.pt_2                       = num.zeros(1, dtype=float)
@@ -48,9 +49,14 @@ class TreeProducerMuMu(TreeProducerCommon):
         self.mass_2                     = num.zeros(1, dtype=float)
         self.dxy_2                      = num.zeros(1, dtype=float)
         self.dz_2                       = num.zeros(1, dtype=float)        
-        self.pfRelIso04_all_2           = num.zeros(1, dtype=float)
         self.q_2                        = num.zeros(1, dtype=int)
+        self.pfRelIso03_all_2           = num.zeros(1, dtype=float)
         self.genPartFlav_2              = num.zeros(1, dtype=int)
+        self.cutBased_2                 = num.zeros(1, dtype=int)
+        self.mvaFall17Iso_2             = num.zeros(1, dtype=float)
+        self.mvaFall17Iso_WP80_2        = num.zeros(1, dtype=int)
+        self.mvaFall17Iso_WP90_2        = num.zeros(1, dtype=int)
+        self.mvaFall17Iso_WPL_2        = num.zeros(1, dtype=int)
 
         self.tree.Branch('pt_2'                      , self.pt_2, 'pt_2/D')
         self.tree.Branch('eta_2'                     , self.eta_2, 'eta_2/D')
@@ -59,6 +65,11 @@ class TreeProducerMuMu(TreeProducerCommon):
         self.tree.Branch('dxy_2'                     , self.dxy_2, 'dxy_2/D')
         self.tree.Branch('dz_2'                      , self.dz_2, 'dz_2/D')
         self.tree.Branch('q_2'                       , self.q_2, 'q_2/I')
-        self.tree.Branch('pfRelIso04_all_2'          , self.pfRelIso04_all_2, 'pfRelIso04_all_2/D')
+        self.tree.Branch('pfRelIso03_all_2'          , self.pfRelIso03_all_2, 'pfRelIso04_all_2/D')
         self.tree.Branch('genPartFlav_2'             , self.genPartFlav_2, 'genPartFlav_2/I')
+        self.tree.Branch('cutBased_2'                , self.cutBased_2, 'cutBased_2/I')
+        self.tree.Branch('mvaFall17Iso_2'            , self.mvaFall17Iso_2, 'mvaFall17Iso_2/D')
+        self.tree.Branch('mvaFall17Iso_WP80_2'       , self.mvaFall17Iso_WP80_2, 'mvaFall17Iso_WP80_2/I')
+        self.tree.Branch('mvaFall17Iso_WP90_2'       , self.mvaFall17Iso_WP90_2, 'mvaFall17Iso_WP90_2/I')
+        self.tree.Branch('mvaFall17Iso_WPL_2'       , self.mvaFall17Iso_WPL_2, 'mvaFall17Iso_WPL_2/I')
 

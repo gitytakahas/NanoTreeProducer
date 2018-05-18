@@ -50,11 +50,14 @@ for directory in os.listdir("./"):
 
             flag = True
 
+            rmcmd = 'rm %s' %file2check
+            os.system(rmcmd)
+
 
     if flag:
         print bcolors.FAIL + "[NG]" + directory + bcolors.ENDC
-        print '\t', len(files), ' out of ', len(filelist), ' files are corrupted ... skip this sample (consider to resubmit the job)'
-        continue
+        print '\t', len(files), ' out of ', len(filelist), ' files are removed'
+#        continue
 
     else:
         print bcolors.BOLD + bcolors.OKGREEN + '[OK] ' + directory + ' ... can be hadded ' + bcolors.ENDC
@@ -92,16 +95,16 @@ for directory in os.listdir("./"):
             if fraction > 0.8:
                 print bcolors.BOLD + bcolors.OKBLUE + '\t [OK] DAS entries = ' + str(int(total_das)) + ' Tree produced = ' + str(int(total_processed)) + '(frac = {0:.2f}'.format(fraction) + ')' + bcolors.ENDC
 
-                skimcmd = 'python extractTrees.py -c ' + options.channel + ' -f ' + directory + '/' + options.channel + '.root'
-                os.system(skimcmd)
-                
-                # cleaning up ...
-                rmcmd = 'rm ' + directory + '/*_' + options.channel + '.root'
-                os.system(rmcmd)
 
             else:
-                print bcolors.BOLD + bcolors.FAIL + '\t [OK] DAS entries = ' + str(int(total_das)) + ' Tree produced = ' + str(int(total_processed)) + '(frac = {0.2f}'.format(fraction) + ')' + bcolors.ENDC
+                print bcolors.BOLD + bcolors.FAIL + '\t [NG] DAS entries = ' + str(int(total_das)) + ' Tree produced = ' + str(int(total_processed)) + '(frac = {0:.2f}'.format(fraction) + ')' + bcolors.ENDC
 
+            skimcmd = 'python extractTrees.py -c ' + options.channel + ' -f ' + directory + '/' + options.channel + '.root'
+            os.system(skimcmd)
+                
+            # cleaning up ...
+            rmcmd = 'rm ' + directory + '/*_' + options.channel + '.root'
+            os.system(rmcmd)
 
 
 

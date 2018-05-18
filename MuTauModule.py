@@ -13,12 +13,21 @@ class declareVariables(TreeProducerMuTau):
         super(declareVariables, self).__init__(name)
 
 
+############################################
+
+
+
+
+############################################
+
+
 class MuTauProducer(Module):
 #    def __init__(self, jetSelection):
 #        self.jetSel = jetSelection
 
     def __init__(self, name, DataType):
 
+        self.name = name
         self.out = declareVariables(name)
 
         if DataType=='data':
@@ -374,7 +383,9 @@ class MuTauProducer(Module):
         self.out.pzetavis[0]   = pZetaVis_
         self.out.pzeta_disc[0] = pZetaMET_ - 0.5*pZetaVis_
 
-
+        ############ extra lepton vetos
+        self.out.extramuon_veto[0], self.out.extraelec_veto[0], self.out.dilepton_veto[0]  = extraLeptonVetos(event, [dilepton.tau1_idx], [-1], self.name)
+        
 
 
         self.out.tree.Fill() 

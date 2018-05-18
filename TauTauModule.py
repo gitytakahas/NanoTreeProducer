@@ -4,74 +4,18 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
 from TreeProducerTauTau import *
 
-#class DiLeptonBasicClass:
-#    def __init__(self, tau1_idx, tau1_pt, tau1_iso, tau2_idx, tau2_pt, tau2_iso):
-#
-#        self.tau1_pt = tau1_pt
-#        self.tau2_pt = tau2_pt
-#        self.tau1_iso = tau1_iso
-#        self.tau2_iso = tau2_iso
-#        self.tau1_idx = tau1_idx
-#        self.tau2_idx = tau2_idx
-#        
-#
-#def bestDiLepton(diLeptons):
-#
-#
-#    if len(diLeptons)==1:
-#        return diLeptons[0]
-#
-##    print '# of diLeptons =', len(diLeptons)
-#
-##    for ii in diLeptons:
-##        print 'tau1 idx =', ii.tau1_idx
-##        print 'tau2 idx =', ii.tau2_idx
-##        print 'tau1 iso =', ii.tau1_iso
-##        print 'tau2 iso = ', ii.tau2_iso
-##        print 'tau1 pt = ', ii.tau1_pt
-##        print 'tau2 pt = ', ii.tau2_pt
-##        print '-'*80
-#
-#    least_iso_highest_pt = lambda dl: (-dl.tau1_iso, -dl.tau1_pt, -dl.tau2_iso, -dl.tau2_pt)
-#    return sorted(diLeptons, key=lambda dl: least_iso_highest_pt(dl), reverse=False)[0]
-#
-#
-#
-#def deltaR2( e1, p1, e2, p2):
-#    de = e1 - e2
-#    dp = deltaPhi(p1, p2)
-#    return de*de + dp*dp
-#
-#
-#def deltaR( *args ):
-#    return math.sqrt( deltaR2(*args) )
-#
-#
-#def deltaPhi( p1, p2):
-#    '''Computes delta phi, handling periodic limit conditions.'''
-#    res = p1 - p2
-#    while res > math.pi:
-#        res -= 2*math.pi
-#    while res < -math.pi:
-#        res += 2*math.pi
-#    return res
-
-
-
 class declareVariables(TreeProducerTauTau):
     
     def __init__(self, name):
 
-#        print 'declareVariables is called'
         super(declareVariables, self).__init__(name)
 
 
 class TauTauProducer(Module):
-#    def __init__(self, jetSelection):
-#        self.jetSel = jetSelection
 
     def __init__(self, name, DataType):
 
+        self.name = name
         self.out = declareVariables(name)
 
         if DataType=='data':
@@ -461,6 +405,9 @@ class TauTauProducer(Module):
         self.out.pzetamiss[0]  = pZetaMET_
         self.out.pzetavis[0]   = pZetaVis_
         self.out.pzeta_disc[0] = pZetaMET_ - 0.5*pZetaVis_
+
+        ############ extra lepton vetos
+        self.out.extramuon_veto[0], self.out.extraelec_veto[0], self.out.dilepton_veto[0]  = extraLeptonVetos(event, [-1], [-1], self.name)
 
         self.out.tree.Fill() 
 

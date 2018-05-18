@@ -1,10 +1,20 @@
 # this is a comment
 keep * # start with all
-#drop HLT_* 
+drop HLT_* 
 #keepmatch HLT_(Iso)?Mu\d+
+keep HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg
+keep HLT_IsoMu27
+keep HLT_Ele32_WPTight_Gsf
 drop *_cleanmask
 drop *FatJet*
 drop *SubJet*
 drop *SoftActivity*
 drop *Photon*
+drop *GenJet*
+drop *GenPart*
+drop *LHEPart*
+drop *Dressed*
+drop *TrigObj*
+drop *SV*
+
 

@@ -9,13 +9,10 @@ class declareVariables(TreeProducerMuEle):
     
     def __init__(self, name):
 
-#        print 'declareVariables is called'
         super(declareVariables, self).__init__(name)
 
 
 class MuEleProducer(Module):
-#    def __init__(self, jetSelection):
-#        self.jetSel = jetSelection
 
     def __init__(self, name, DataType):
 
@@ -327,6 +324,8 @@ class MuEleProducer(Module):
 
         # extra lepton vetos
         self.out.extramuon_veto[0], self.out.extraelec_veto[0], self.out.dilepton_veto[0]  = extraLeptonVetos(event, [dilepton.tau1_idx], [dilepton.tau2_idx], self.name)
+
+        self.out.isData[0] = self.isData
 
         self.out.tree.Fill() 
 

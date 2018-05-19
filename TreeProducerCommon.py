@@ -171,6 +171,7 @@ class TreeProducerCommon(object):
         self.fixedGridRhoFastjetAll     = num.zeros(1, dtype=float)
         self.genWeight                  = num.zeros(1, dtype=float)
         self.LHE_Njets                  = num.zeros(1, dtype=int)
+        self.isData                     = num.zeros(1, dtype=int)
 
         self.tree.Branch('run'                       , self.run, 'run/I')
         self.tree.Branch('luminosityBlock'           , self.luminosityBlock, 'luminosityBlock/I')
@@ -189,6 +190,7 @@ class TreeProducerCommon(object):
         self.tree.Branch('fixedGridRhoFastjetAll'    , self.fixedGridRhoFastjetAll, 'fixedGridRhoFastjetAll/D')
         self.tree.Branch('genWeight'                 , self.genWeight, 'genWeight/D')
         self.tree.Branch('LHE_Njets'                 , self.LHE_Njets, 'LHE_Njets/I')
+        self.tree.Branch('isData'                    , self.isData, 'isData/I')
 
 
 
@@ -220,9 +222,10 @@ class TreeProducerCommon(object):
         self.pzetavis                   = num.zeros(1, dtype=float)
         self.pzeta_disc                 = num.zeros(1, dtype=float)
 
-        self.dilepton_veto               = num.zeros(1, dtype=int)
-        self.extraelec_veto              = num.zeros(1, dtype=int)
-        self.extramuon_veto              = num.zeros(1, dtype=int)
+        self.dilepton_veto              = num.zeros(1, dtype=int)
+        self.extraelec_veto             = num.zeros(1, dtype=int)
+        self.extramuon_veto             = num.zeros(1, dtype=int)
+        self.weight                     = num.zeros(1, dtype=float)
 
 
         self.tree.Branch('njets'                       , self.njets, 'njets/I')
@@ -257,3 +260,5 @@ class TreeProducerCommon(object):
         self.tree.Branch('dilepton_veto'               , self.dilepton_veto, 'dilepton_veto/I')
         self.tree.Branch('extraelec_veto'              , self.extraelec_veto, 'extraelec_veto/I')
         self.tree.Branch('extramuon_veto'              , self.extramuon_veto, 'extramuon_veto/I')
+
+        self.tree.Branch('weight'                      , self.weight, 'weight/D')

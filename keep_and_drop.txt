@@ -2,17 +2,20 @@
 keep * # start with all
 drop HLT_* 
 #keepmatch HLT_(Iso)?Mu\d+
-keep HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg
+
 keep HLT_IsoMu27
 keep HLT_Ele32_WPTight_Gsf
+keep HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg
+keep HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg
+keep HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg
 drop *_cleanmask
 drop *FatJet*
 drop *SubJet*
 drop *SoftActivity*
 drop *Photon*
-drop *GenJet*
-drop *GenPart*
-drop *LHEPart*
+#drop *GenJet*
+#drop *GenPart*
+#drop *LHEPart*
 drop *Dressed*
 drop *TrigObj*
 drop *SV*

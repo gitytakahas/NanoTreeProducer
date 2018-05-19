@@ -85,7 +85,7 @@ if __name__ == "__main__":
         if options.channel=='tautau':
             if pattern.find('/SingleMuon')!=-1 or pattern.find('/SingleElectron')!=-1: continue
 
-        if options.channel in ['mutau', 'mumu']:
+        if options.channel in ['mutau', 'mumu', 'muele']:
             if pattern.find('/SingleElectron')!=-1 or pattern.find('/Tau')!=-1: continue
 
         if options.channel=='eletau':

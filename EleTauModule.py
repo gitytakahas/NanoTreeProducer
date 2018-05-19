@@ -9,13 +9,10 @@ class declareVariables(TreeProducerEleTau):
     
     def __init__(self, name):
 
-#        print 'declareVariables is called'
         super(declareVariables, self).__init__(name)
 
 
 class EleTauProducer(Module):
-#    def __init__(self, jetSelection):
-#        self.jetSel = jetSelection
 
     def __init__(self, name, DataType):
 
@@ -382,6 +379,8 @@ class EleTauProducer(Module):
 
         # extra lepton vetos
         self.out.extramuon_veto[0], self.out.extraelec_veto[0], self.out.dilepton_veto[0]  = extraLeptonVetos(event, [-1], [dilepton.tau1_idx], self.name)
+
+        self.out.isData[0] = self.isData
 
         self.out.tree.Fill() 
 

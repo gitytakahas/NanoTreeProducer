@@ -88,11 +88,18 @@ elif channel == 'eletau':
 
     module2run = lambda : EleTauProducer(_postfix, DataType)
 
+
 elif channel == 'mumu':
 
     from MuMuModule import *
 
     module2run = lambda : MuMuProducer(_postfix, DataType)
+
+elif channel == 'muele':
+
+    from MuEleModule import *
+
+    module2run = lambda : MuEleProducer(_postfix, DataType)
 
 else:
     print 'Unkonwn channel !!!!!!!'

@@ -4,6 +4,9 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
 from TreeProducerTauTau import *
 
+# for trigger efficiencies
+from getTauTriggerSFs import *
+
 class declareVariables(TreeProducerTauTau):
     
     def __init__(self, name):
@@ -22,6 +25,9 @@ class TauTauProducer(Module):
             self.isData = True
         else:
             self.isData = False
+
+
+        self.tauSFs = getTauTriggerSFs('vtight')
 
         self.Nocut = 0
         self.Trigger = 1
@@ -63,7 +69,13 @@ class TauTauProducer(Module):
         #####################################
 
 
-        if not event.HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg: 
+#        if event.HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg or : 
+
+#        print 'trig = ', event.HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, event.HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, event.HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg
+
+        if event.HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg > 0.5 or event.HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg > 0.5 or event.HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg > 0.5:
+            pass
+        else:
             return False
 
 
@@ -196,7 +208,7 @@ class TauTauProducer(Module):
         self.out.rawMVAoldDM_1[0]              = event.Tau_rawMVAoldDM[dilepton.tau1_idx]
         self.out.rawMVAoldDM2017v1_1[0]        = event.Tau_rawMVAoldDM2017v1[dilepton.tau1_idx]
         self.out.rawMVAoldDM2017v2_1[0]        = event.Tau_rawMVAoldDM2017v2[dilepton.tau1_idx]
-        self.out.charge_1[0]                   = event.Tau_charge[dilepton.tau1_idx]
+        self.out.q_1[0]                        = event.Tau_charge[dilepton.tau1_idx]
         self.out.decayMode_1[0]                = event.Tau_decayMode[dilepton.tau1_idx]
         self.out.rawAntiEleCat_1[0]            = event.Tau_rawAntiEleCat[dilepton.tau1_idx]
 #        print type(event.Tau_idAntiEle[dilepton.tau1_idx])
@@ -259,7 +271,7 @@ class TauTauProducer(Module):
         self.out.rawMVAoldDM_2[0]              = event.Tau_rawMVAoldDM[dilepton.tau2_idx]
         self.out.rawMVAoldDM2017v1_2[0]        = event.Tau_rawMVAoldDM2017v1[dilepton.tau2_idx]
         self.out.rawMVAoldDM2017v2_2[0]        = event.Tau_rawMVAoldDM2017v2[dilepton.tau2_idx]
-        self.out.charge_2[0]                   = event.Tau_charge[dilepton.tau2_idx]
+        self.out.q_2[0]                        = event.Tau_charge[dilepton.tau2_idx]
         self.out.decayMode_2[0]                = event.Tau_decayMode[dilepton.tau2_idx]
         self.out.rawAntiEleCat_2[0]            = event.Tau_rawAntiEleCat[dilepton.tau2_idx]
         self.out.idAntiEle_2[0]                = ord(event.Tau_idAntiEle[dilepton.tau2_idx])
@@ -408,6 +420,14 @@ class TauTauProducer(Module):
 
         ############ extra lepton vetos
         self.out.extramuon_veto[0], self.out.extraelec_veto[0], self.out.dilepton_veto[0]  = extraLeptonVetos(event, [-1], [-1], self.name)
+
+        self.out.isData[0] = self.isData
+
+
+        diTauLeg1SF = self.tauSFs.getDiTauScaleFactor( self.out.pt_1, self.out.eta_1, self.out.phi_1 )
+        diTauLeg2SF = self.tauSFs.getDiTauScaleFactor( self.out.pt_2, self.out.eta_2, self.out.phi_2 )
+
+        self.out.weight[0]  =  diTauLeg1SF*diTauLeg2SF
 
         self.out.tree.Fill() 
 

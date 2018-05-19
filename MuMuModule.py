@@ -302,6 +302,7 @@ class MuMuProducer(Module):
 
         self.out.extramuon_veto[0], self.out.extraelec_veto[0], self.out.dilepton_veto[0]  = extraLeptonVetos(event, [dilepton.tau1_idx, dilepton.tau2_idx], [-1], self.name)
 
+        self.out.isData[0] = self.isData
 
         self.out.tree.Fill() 
 

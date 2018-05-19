@@ -43,7 +43,7 @@ elif options.channel=='eletau':
     selection = 'idDecayMode_2==1 && idMVAoldDM2017v2_2 >= 3 && pfRelIso03_all_1 < 0.15'
 
 elif options.channel=='mumu':
-    selection = 'pfRelIso03_all_1 < 0.15 && pfRelIso03_all_2 < 0.15'
+    selection = 'pfRelIso04_all_1 < 0.15 && pfRelIso04_all_2 < 0.15'
 
 
 print '============================='

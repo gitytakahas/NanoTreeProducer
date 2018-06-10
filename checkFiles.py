@@ -77,7 +77,15 @@ for directory in os.listdir("./"):
             total_processed = Double(f_hadd.Get('h_cutflow').GetBinContent(1))
             
 #            print 'Check number of events = ', total_processed
-            
+
+
+            if directory.find('LQ3')!=-1:
+                skimcmd = 'python extractTrees.py -c ' + options.channel + ' -f ' + directory + '/' + options.channel + '.root'
+                os.system(skimcmd)
+                rmcmd = 'rm ' + directory + '/*_' + options.channel + '.root'
+                os.system(rmcmd)
+                continue
+
             dasname = directory.replace('__', '/')
             instance = 'prod/global'
             

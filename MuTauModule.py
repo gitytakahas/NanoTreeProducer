@@ -4,26 +4,18 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
 from TreeProducerMuTau import *
 
+# for muon SFs
+from getMuSFs import *
+
 
 class declareVariables(TreeProducerMuTau):
     
     def __init__(self, name):
 
-#        print 'declareVariables is called'
         super(declareVariables, self).__init__(name)
 
 
-############################################
-
-
-
-
-############################################
-
-
 class MuTauProducer(Module):
-#    def __init__(self, jetSelection):
-#        self.jetSel = jetSelection
 
     def __init__(self, name, DataType):
 
@@ -34,6 +26,8 @@ class MuTauProducer(Module):
             self.isData = True
         else:
             self.isData = False
+
+        self.muSFs = getMuSFs()
 
         self.Nocut = 0
         self.Trigger = 1
@@ -48,7 +42,6 @@ class MuTauProducer(Module):
     def endJob(self):
         self.out.outputfile.Write()
         self.out.outputfile.Close()
-#        pass
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
@@ -386,8 +379,10 @@ class MuTauProducer(Module):
         ############ extra lepton vetos
         self.out.extramuon_veto[0], self.out.extraelec_veto[0], self.out.dilepton_veto[0]  = extraLeptonVetos(event, [dilepton.tau1_idx], [-1], self.name)
         
+        self.out.isData[0] = self.isData
 
-
+        self.out.weight[0] = self.muSFs.getMuWeight(self.out.pt_1[0], self.out.eta_1[0])
+        
         self.out.tree.Fill() 
 
         return True

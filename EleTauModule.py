@@ -4,6 +4,9 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
 from TreeProducerEleTau import *
 
+# for muon SFs
+from getEleSFs import *
+
 
 class declareVariables(TreeProducerEleTau):
     
@@ -24,6 +27,8 @@ class EleTauProducer(Module):
         else:
             self.isData = False
 
+        self.eleSFs = getEleSFs()
+
         self.Nocut = 0
         self.Trigger = 1
         self.GoodElectrons = 2
@@ -37,7 +42,6 @@ class EleTauProducer(Module):
     def endJob(self):
         self.out.outputfile.Write()
         self.out.outputfile.Close()
-#        pass
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
@@ -63,7 +67,7 @@ class EleTauProducer(Module):
             self.out.h_cutflow.Fill(self.TotalWeighted, 1.)
         #####################################
 
-        if not event.HLT_Ele32_WPTight_Gsf:
+        if not event.HLT_Ele35_WPTight_Gsf:
             return False
 
         #####################################
@@ -74,7 +78,7 @@ class EleTauProducer(Module):
         
         for ielectron in range(event.nElectron):
 
-            if event.Electron_pt[ielectron] < 33: continue
+            if event.Electron_pt[ielectron] < 36: continue
             if abs(event.Electron_eta[ielectron]) > 2.1: continue
             if abs(event.Electron_dz[ielectron]) > 0.2: continue
             if abs(event.Electron_dxy[ielectron]) > 0.045: continue
@@ -381,6 +385,8 @@ class EleTauProducer(Module):
         self.out.extramuon_veto[0], self.out.extraelec_veto[0], self.out.dilepton_veto[0]  = extraLeptonVetos(event, [-1], [dilepton.tau1_idx], self.name)
 
         self.out.isData[0] = self.isData
+
+        self.out.weight[0] = self.eleSFs.getEleWeight(self.out.pt_1[0], self.out.eta_1[0])
 
         self.out.tree.Fill() 
 

@@ -2,19 +2,20 @@ import ROOT
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection 
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
-from TreeProducerTauTau import *
+from TreeProducerMuTau import *
 
-# for trigger efficiencies
-from getTauTriggerSFs import *
+# for muon SFs
+from getMuSFs import *
 
-class declareVariables(TreeProducerTauTau):
+
+class declareVariables(TreeProducerMuTau):
     
     def __init__(self, name):
 
         super(declareVariables, self).__init__(name)
 
 
-class TauTauProducer(Module):
+class MuTauProducer(Module):
 
     def __init__(self, name, DataType):
 
@@ -26,20 +27,21 @@ class TauTauProducer(Module):
         else:
             self.isData = False
 
-
-        self.tauSFs = getTauTriggerSFs('vtight')
+        self.muSFs = getMuSFs()
 
         self.Nocut = 0
         self.Trigger = 1
-        self.GoodTaus = 2
-        self.GoodDiLepton = 3
-
-        self.Nocut_GT = 20
-        self.Trigger_GT = 21
-        self.GoodTaus_GT = 22
-        self.GoodDiLepton_GT = 23
-
+        self.GoodMuons = 2
+        self.GoodTaus = 3
+        self.GoodDiLepton = 4
         self.TotalWeighted = 15
+
+
+        ### add only for sync tree ... trigger flag
+
+        self.out.trg_singlemuon           = num.zeros(1, dtype=int)
+        self.out.tree.Branch('trg_singlemuon'             , self.out.trg_singlemuon, 'trg_singlemuon/I')
+
 
     def beginJob(self):
         pass
@@ -47,7 +49,6 @@ class TauTauProducer(Module):
     def endJob(self):
         self.out.outputfile.Write()
         self.out.outputfile.Close()
-#        pass
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
@@ -60,103 +61,10 @@ class TauTauProducer(Module):
         """process event, return True (go to next module) or False (fail, go to next event)"""
 
 #        electrons = Collection(event, "Electron")
-#        muons = Collection(event, "Muon")
 
-
-
-        ngentauhads = 0
-
-        print '-'*80
-
-        ngentaus = 0
-
-        if not self.isData:
-
-            for igp in range(event.nGenPart):
-
-                if abs(event.GenPart_pdgId[igp])==15 and event.GenPart_status[igp]==2:
-                    
-                    genflag = event.GenPart_statusFlags[igp]
-
-                    binary = format(genflag,'b').zfill(15)
-
-                    # 0 : isPrompt
-                    # 1 : isDecayedLeptonHadron
-                    # 2 : isTauDecayProduct
-                    # 3 : isPromptTauDecayProduct
-                    # 4 : isDirectTauDecayProduct
-                    # 5 : isDirectPromptTauDecayProduct
-                    # 6 : isDirectHadronDecayProduct
-                    # 7 : isHardProcess
-                    # 8 : fromHardProcess
-                    # 9 : isHardProcessTauDecayProduct
-                    # 10 : isDirectHardProcessTauDecayProduct
-                    # 11 : fromHardProcessBeforeFSR
-                    # 12 : isFirstCopy
-                    # 13 : isLastCopy
-                    # 14 : isLastCopyBeforeFSR
-
-                    if int(binary[14])==0: continue
-
-                    if int(binary[6])==0: continue
-
-
-                    ngentaus += 1
-
-                    print 'Tau found with status = 2 (pt, eta) = ', event.GenPart_pt[igp], event.GenPart_eta[igp], event.GenPart_statusFlags[igp]
-
-                    _pdg_ = -1
-                    _idx_ = event.GenPart_genPartIdxMother[igp]
-#                    _status_ = -1
-                    flag_resonance = False
-
-                    while abs(_pdg_) not in [9000002, 9000006]:
-
-                        if _idx_==-1: break
-
-                        _pdg_ = event.GenPart_pdgId[_idx_]
-#                        _status_ = event.GenPart_status[_idx_]
-                        _idx_ = event.GenPart_genPartIdxMother[_idx_]
-
-
-                        if abs(_pdg_) > 30 and abs(_pdg_) not in [9000002, 9000006]: 
-                            flag_resonance = True
-
-#                        print '\t (pdg, mother id) = ', _pdg_, _status_, _idx_
-
-                        
-                    if flag_resonance: continue
-
-                    _dr_ = 100.
-                    for igvt in range(event.nGenVisTau):
-                        dr = deltaR(event.GenPart_eta[igp], event.GenPart_phi[igp], event.GenVisTau_eta[igvt], event.GenVisTau_phi[igvt])
-
-#                        print dr, _dr_, event.GenPart_eta[igp], event.GenPart_phi[igp], event.GenVisTau_eta[igvt], event.GenVisTau_phi[igvt]
-                        
-                        if _dr_ > dr:
-                            _dr_ = dr
-                            
-#
-#                    print 'match !',_pdg_, event.nGenVisTau,  _dr_
-                    if _dr_ < 0.1:
-                        ngentauhads += 1
-
-#            for igvt in range(event.nGenVisTau):
-#                print 'status = ', event.GenVisTau_status[igvt], 'mother ID = ', event.GenVisTau_genPartIdxMother[igvt], 'pt = ', event.GenVisTau_pt[igvt], ', eta = ', event.GenVisTau_eta[igvt]
-#                ngentauhads += 1
-                
-
-        if ngentaus != 2:
-           print 'WOW!!!!!!!!!!!!!!!'
-
-#        print ngentaus
 
         #####################################
         self.out.h_cutflow.Fill(self.Nocut)
-        
-        if ngentauhads == 2:
-            self.out.h_cutflow.Fill(self.Nocut_GT)
-
         #####################################
 
         #####################################
@@ -166,66 +74,78 @@ class TauTauProducer(Module):
             self.out.h_cutflow.Fill(self.TotalWeighted, 1.)
         #####################################
 
-
-#        if event.HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg or : 
-
-#        print 'trig = ', event.HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, event.HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, event.HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg
-
-        if event.HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg > 0.5 or event.HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg > 0.5 or event.HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg > 0.5:
-            pass
-        else:
-            return False
-
+#       if not event.HLT_IsoMu27:
+#            return False
 
         #####################################
         self.out.h_cutflow.Fill(self.Trigger)
+        #####################################
 
-        if ngentauhads == 2:
-            self.out.h_cutflow.Fill(self.Trigger_GT)
+        idx_goodmuons = []
+        
+        for imuon in range(event.nMuon):
+
+            if event.Muon_pt[imuon] < 20: continue
+            if abs(event.Muon_eta[imuon]) > 2.1: continue
+            if abs(event.Muon_dz[imuon]) > 0.2: continue
+            if abs(event.Muon_dxy[imuon]) > 0.045: continue
+            if not event.Muon_mediumId[imuon]: continue
+
+            idx_goodmuons.append(imuon)
+
+
+        if len(idx_goodmuons)==0:
+            return False
 
         #####################################
+        self.out.h_cutflow.Fill(self.GoodMuons)
+        #####################################
+
+
 
         idx_goodtaus = []
         
         for itau in range(event.nTau):
-#            print 'pt=', event.Tau_pt[itau], abs(event.Tau_eta[itau])
-            if event.Tau_pt[itau] < 40: continue
-            if abs(event.Tau_eta[itau]) > 2.1: continue
+
+            if event.Tau_pt[itau] < 20: continue
+            if abs(event.Tau_eta[itau]) > 2.3: continue
             if abs(event.Tau_dz[itau]) > 0.2: continue
-            if event.Tau_decayMode[itau] not in [0,1,10]: continue
+            if event.Tau_idDecayMode[itau] < 0.5: continue
             if abs(event.Tau_charge[itau])!=1: continue
 
-#            print itau, 'decay mode = ', event.Tau_decayMode[itau] 
             idx_goodtaus.append(itau)
 
 
-        if len(idx_goodtaus)<2:
+
+        if len(idx_goodtaus)==0:
             return False
 
 
         #####################################
         self.out.h_cutflow.Fill(self.GoodTaus)
-
-        if ngentauhads == 2:
-            self.out.h_cutflow.Fill(self.GoodTaus_GT)
-
         #####################################
 
         
         # to check dR matching
+
+        muons = Collection(event, "Muon")
         taus = Collection(event, "Tau")
         dileptons = []
 
-        for idx1 in idx_goodtaus:
+        for idx1 in idx_goodmuons:
             for idx2 in idx_goodtaus:
                 
                 if idx1 >= idx2: continue
 
-                dR = taus[idx1].p4().DeltaR(taus[idx2].p4())
+                dR = taus[idx2].p4().DeltaR(muons[idx1].p4())
                 if dR < 0.5: continue
 
+#                muon_reliso = event.Muon_pfRelIso04_all[idx1]/event.Muon_pt[idx1]
+                muon_reliso = event.Muon_pfRelIso04_all[idx1]
+                
+#                print muon_reliso
 
-                _dilepton = DiLeptonBasicClass(idx1, event.Tau_pt[idx1], event.Tau_rawMVAoldDM[idx1], idx2, event.Tau_pt[idx2], event.Tau_rawMVAoldDM[idx2])
+                _dilepton = DiLeptonBasicClass(idx1, event.Muon_pt[idx1], muon_reliso, idx2, event.Tau_pt[idx2], event.Tau_rawMVAoldDM[idx2])
 
                 dileptons.append(_dilepton)
 
@@ -235,17 +155,12 @@ class TauTauProducer(Module):
 
         #####################################
         self.out.h_cutflow.Fill(self.GoodDiLepton)
-
-        if ngentauhads == 2:
-            self.out.h_cutflow.Fill(self.GoodDiLepton_GT)
-
         #####################################
 
         dilepton = bestDiLepton(dileptons)
 
 #        print 'chosen tau1 (idx, pt) = ', dilepton.tau1_idx, dilepton.tau1_pt, 'check', taus[dilepton.tau1_idx].p4().Pt()
 #        print 'chosen tau2 (idx, pt) = ', dilepton.tau2_idx, dilepton.tau2_pt, 'check', taus[dilepton.tau2_idx].p4().Pt()
-
 
         jetIds = []
 
@@ -267,7 +182,7 @@ class TauTauProducer(Module):
             if abs(event.Jet_eta[ijet]) > 4.7: 
                 continue
 
-            dR = taus[dilepton.tau1_idx].p4().DeltaR(jets[ijet].p4())
+            dR = muons[dilepton.tau1_idx].p4().DeltaR(jets[ijet].p4())
             if dR < 0.5: 
                 continue
 
@@ -300,66 +215,15 @@ class TauTauProducer(Module):
 #            eventSum += j.p4()
 
 
-        # tau 1
-        self.out.pt_1[0]                       = event.Tau_pt[dilepton.tau1_idx]
-        self.out.eta_1[0]                      = event.Tau_eta[dilepton.tau1_idx]
-        self.out.phi_1[0]                      = event.Tau_phi[dilepton.tau1_idx]
-        self.out.mass_1[0]                     = event.Tau_mass[dilepton.tau1_idx]
-        self.out.dxy_1[0]                      = event.Tau_dxy[dilepton.tau1_idx]
-        self.out.dz_1[0]                       = event.Tau_dz[dilepton.tau1_idx]         
-        self.out.leadTkPtOverTauPt_1[0]        = event.Tau_leadTkPtOverTauPt[dilepton.tau1_idx]
-        self.out.chargedIso_1[0]               = event.Tau_chargedIso[dilepton.tau1_idx]
-        self.out.neutralIso_1[0]               = event.Tau_neutralIso[dilepton.tau1_idx]
-        self.out.photonsOutsideSignalCone_1[0] = event.Tau_photonsOutsideSignalCone[dilepton.tau1_idx]
-        self.out.puCorr_1[0]                   = event.Tau_puCorr[dilepton.tau1_idx]
-        self.out.rawAntiEle_1[0]               = event.Tau_rawAntiEle[dilepton.tau1_idx]
-        self.out.rawIso_1[0]                   = event.Tau_rawIso[dilepton.tau1_idx]
-        self.out.rawMVAnewDM2017v2_1[0]        = event.Tau_rawMVAnewDM2017v2[dilepton.tau1_idx]
-        self.out.rawMVAoldDM_1[0]              = event.Tau_rawMVAoldDM[dilepton.tau1_idx]
-        self.out.rawMVAoldDM2017v1_1[0]        = event.Tau_rawMVAoldDM2017v1[dilepton.tau1_idx]
-        self.out.rawMVAoldDM2017v2_1[0]        = event.Tau_rawMVAoldDM2017v2[dilepton.tau1_idx]
-        self.out.q_1[0]                        = event.Tau_charge[dilepton.tau1_idx]
-        self.out.decayMode_1[0]                = event.Tau_decayMode[dilepton.tau1_idx]
-        self.out.rawAntiEleCat_1[0]            = event.Tau_rawAntiEleCat[dilepton.tau1_idx]
-#        print type(event.Tau_idAntiEle[dilepton.tau1_idx])
-#        print 'this is bitmask',  ord(event.Tau_idAntiEle[dilepton.tau1_idx]), type(ord(event.Tau_idAntiEle[dilepton.tau1_idx]))
-        self.out.idAntiEle_1[0]                = ord(event.Tau_idAntiEle[dilepton.tau1_idx])
-        self.out.idAntiMu_1[0]                 = ord(event.Tau_idAntiMu[dilepton.tau1_idx])
-        self.out.idDecayMode_1[0]              = event.Tau_idDecayMode[dilepton.tau1_idx]
-        self.out.idDecayModeNewDMs_1[0]        = event.Tau_idDecayModeNewDMs[dilepton.tau1_idx]
-        self.out.idMVAnewDM2017v2_1[0]         = ord(event.Tau_idMVAnewDM2017v2[dilepton.tau1_idx])
-        self.out.idMVAoldDM_1[0]               = ord(event.Tau_idMVAoldDM[dilepton.tau1_idx])
-        self.out.idMVAoldDM2017v1_1[0]         = ord(event.Tau_idMVAoldDM2017v1[dilepton.tau1_idx])
-        self.out.idMVAoldDM2017v2_1[0]         = ord(event.Tau_idMVAoldDM2017v2[dilepton.tau1_idx])
-
-
-
-        if not self.isData:
-            self.out.genPartFlav_1[0]              = ord(event.Tau_genPartFlav[dilepton.tau1_idx])
-
-            genvistau = Collection(event, "GenVisTau")
-
-            _drmax_ = 1000
-            gendm = -1
-            genpt = -1
-            geneta = -1
-            genphi = -1
-
-            for igvt in range(event.nGenVisTau):
-
-                _dr_ = genvistau[igvt].p4().DeltaR(taus[dilepton.tau1_idx].p4())
-            
-                if _dr_ < 0.5 and _dr_ < _drmax_:
-                    _drmax_ = _dr_
-                    gendm = event.GenVisTau_status[igvt]
-                    genpt = event.GenVisTau_pt[igvt]
-                    geneta = event.GenVisTau_eta[igvt]
-                    genphi = event.GenVisTau_phi[igvt]
-
-            self.out.gendecayMode_1[0]         = gendm
-            self.out.genvistaupt_1[0]          = genpt
-            self.out.genvistaueta_1[0]         = geneta
-            self.out.genvistauphi_1[0]         = genphi
+        # muon
+        self.out.pt_1[0]                       = event.Muon_pt[dilepton.tau1_idx]
+        self.out.eta_1[0]                      = event.Muon_eta[dilepton.tau1_idx]
+        self.out.phi_1[0]                      = event.Muon_phi[dilepton.tau1_idx]
+        self.out.mass_1[0]                     = event.Muon_mass[dilepton.tau1_idx]
+        self.out.dxy_1[0]                      = event.Muon_dxy[dilepton.tau1_idx]
+        self.out.dz_1[0]                       = event.Muon_dz[dilepton.tau1_idx]         
+        self.out.q_1[0]                        = event.Muon_charge[dilepton.tau1_idx]
+        self.out.pfRelIso04_all_1[0]           = event.Muon_pfRelIso04_all[dilepton.tau1_idx]
 
 
 
@@ -396,6 +260,7 @@ class TauTauProducer(Module):
 #        print type(event.Tau_genPartFlav[dilepton.tau2_idx])
 
         if not self.isData:
+            self.out.genPartFlav_1[0]              = ord(event.Muon_genPartFlav[dilepton.tau1_idx])
             self.out.genPartFlav_2[0]              = ord(event.Tau_genPartFlav[dilepton.tau2_idx])
 
             genvistau = Collection(event, "GenVisTau")
@@ -423,11 +288,9 @@ class TauTauProducer(Module):
             self.out.genvistauphi_2[0]         = genphi
 
 
-
         # event weights
         self.out.run[0]                        = event.run
         self.out.luminosityBlock[0]            = event.luminosityBlock
-#        print 'event =', event.event & 0xffffffffffffffff, 'original = ', event.event
         self.out.event[0]                      = event.event & 0xffffffffffffffff
         self.out.MET_pt[0]                     = event.MET_pt
         self.out.MET_phi[0]                    = event.MET_phi
@@ -447,18 +310,8 @@ class TauTauProducer(Module):
             self.out.Pileup_nPU[0]                 = event.Pileup_nPU
             self.out.Pileup_nTrueInt[0]            = event.Pileup_nTrueInt
             self.out.genWeight[0]                  = event.genWeight
-            
-#            print 'check (LO)', event.LHE_NpLO, type(event.LHE_NpLO)
-#            print 'check (NLO)', event.LHE_NpNLO, type(event.LHE_NpNLO)
-
-#            self.out.LHE_NpLO[0]                   = event.LHE_NpLO
-#            self.out.LHE_NpNLO[0]                  = event.LHE_NpNLO
             self.out.LHE_Njets[0]                  = event.LHE_Njets
-#            print self.out.LHE_Njets[0], event.LHE_Njets 
-#            print self.out.event[0], event.event, (event.event & 0xffffffffffffffff)
-#            print self.out.LHE_Njets[0], event.LHE_Njets, int(event.LHE_Njets)
-#            print event.LHE_NpNLO
-#            print self.out.Pileup_nPU, event.Pileup_nPU
+
 
         self.out.jpt_1[0]                      = -9.
         self.out.jeta_1[0]                     = -9.
@@ -471,6 +324,7 @@ class TauTauProducer(Module):
         self.out.jphi_2[0]                     = -9.
         self.out.jcsvv2_2[0]                   = -9.
         self.out.jdeepb_2[0]                   = -9.
+
 
         if len(jetIds)>0:
             self.out.jpt_1[0]                      = event.Jet_pt[jetIds[0]]
@@ -486,6 +340,7 @@ class TauTauProducer(Module):
             self.out.jcsvv2_2[0]                   = event.Jet_btagCSVV2[jetIds[1]]
             self.out.jdeepb_2[0]                   = event.Jet_btagDeepB[jetIds[1]]
 
+
         self.out.njets[0]                      = len(jetIds)
         self.out.nfjets[0]                     = nfjets
         self.out.ncjets[0]                     = ncjets
@@ -494,16 +349,16 @@ class TauTauProducer(Module):
         self.out.pfmt_1[0]                     = math.sqrt( 2 * self.out.pt_1[0] * self.out.MET_pt[0] * ( 1 - math.cos(deltaPhi(self.out.phi_1[0], self.out.MET_phi[0])) ) );
         self.out.pfmt_2[0]                     = math.sqrt( 2 * self.out.pt_2[0] * self.out.MET_pt[0] * ( 1 - math.cos(deltaPhi(self.out.phi_2[0], self.out.MET_phi[0])) ) );
 
-        self.out.m_vis[0]                      = (taus[dilepton.tau1_idx].p4() + taus[dilepton.tau2_idx].p4()).M()
-        self.out.pt_tt[0]                      = (taus[dilepton.tau1_idx].p4() + taus[dilepton.tau2_idx].p4()).Pt()
+        self.out.m_vis[0]                      = (muons[dilepton.tau1_idx].p4() + taus[dilepton.tau2_idx].p4()).M()
+        self.out.pt_tt[0]                      = (muons[dilepton.tau1_idx].p4() + taus[dilepton.tau2_idx].p4()).Pt()
         
-        self.out.dR_ll[0]                      = taus[dilepton.tau1_idx].p4().DeltaR(taus[dilepton.tau2_idx].p4())
+        self.out.dR_ll[0]                      = muons[dilepton.tau1_idx].p4().DeltaR(taus[dilepton.tau2_idx].p4())
         self.out.dphi_ll[0]                    = deltaPhi(self.out.phi_1[0], self.out.phi_2[0])
 
 
         # pzeta calculation
 
-        leg1 = ROOT.TVector3(taus[dilepton.tau1_idx].p4().Px(), taus[dilepton.tau1_idx].p4().Py(), 0.)
+        leg1 = ROOT.TVector3(muons[dilepton.tau1_idx].p4().Px(), muons[dilepton.tau1_idx].p4().Py(), 0.)
         leg2 = ROOT.TVector3(taus[dilepton.tau2_idx].p4().Px(), taus[dilepton.tau2_idx].p4().Py(), 0.)
         
 #        print 'leg1 px,py,pz = ', taus[dilepton.tau1_idx].p4().Px(), taus[dilepton.tau1_idx].p4().Py(), '0'
@@ -529,24 +384,14 @@ class TauTauProducer(Module):
         self.out.pzeta_disc[0] = pZetaMET_ - 0.5*pZetaVis_
 
         ############ extra lepton vetos
-        self.out.extramuon_veto[0], self.out.extraelec_veto[0], self.out.dilepton_veto[0]  = extraLeptonVetos(event, [-1], [-1], self.name)
-
+        self.out.extramuon_veto[0], self.out.extraelec_veto[0], self.out.dilepton_veto[0]  = extraLeptonVetos(event, [dilepton.tau1_idx], [-1], self.name)
+        
         self.out.isData[0] = self.isData
 
+        self.out.weight[0] = self.muSFs.getMuWeight(self.out.pt_1[0], self.out.eta_1[0])
 
-        diTauLeg1SF = self.tauSFs.getDiTauScaleFactor( self.out.pt_1, self.out.eta_1, self.out.phi_1 )
-        diTauLeg2SF = self.tauSFs.getDiTauScaleFactor( self.out.pt_2, self.out.eta_2, self.out.phi_2 )
+        self.out.trg_singlemuon[0] = event.HLT_IsoMu27
         
-        self.out.ngentauhads[0] = ngentauhads
-        self.out.ngentaus[0] = ngentaus
-        self.out.weight[0]  =  diTauLeg1SF*diTauLeg2SF
-
-    
-
         self.out.tree.Fill() 
+
         return True
-
-
-# define modules using the syntax 'name = lambda : constructor' to avoid having them loaded when not needed
-
-#TauTauModule = lambda : TauTauProducer(jetSelection= lambda j : j.pt > 30) 

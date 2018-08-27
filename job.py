@@ -58,7 +58,7 @@ print '-'*80
 
 DataType = 'mc'
 
-if infile[0].find("/SingleMuon/")!=-1 or infile[0].find("/Tau/")!=-1:
+if infile[0].find("/SingleMuon/")!=-1 or infile[0].find("/Tau/")!=-1 or infile[0].find("/SingleElectron/")!=-1:
     DataType = 'data'
 
 
@@ -73,18 +73,21 @@ module2run = None
 if channel == 'tautau':
 
     from TauTauModule import *
+#    from TauTauModule_sync import *
 
     module2run = lambda : TauTauProducer(_postfix, DataType)
 
 elif channel == 'mutau':
 
     from MuTauModule import *
+#    from MuTauModule_sync import *
 
     module2run = lambda : MuTauProducer(_postfix, DataType)
 
 elif channel == 'eletau':
 
     from EleTauModule import *
+#    from EleTauModule_sync import *
 
     module2run = lambda : EleTauProducer(_postfix, DataType)
 

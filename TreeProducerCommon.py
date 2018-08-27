@@ -143,7 +143,7 @@ class TreeProducerCommon(object):
         self.tree = ROOT.TTree('tree','tree')
 
         # histogram for cutflow
-        self.h_cutflow = ROOT.TH1F("h_cutflow", "h_cutflow", 20, 0, 20) 
+        self.h_cutflow = ROOT.TH1F("h_cutflow", "h_cutflow", 50, 0, 50)
 
         
         ##################
@@ -225,6 +225,9 @@ class TreeProducerCommon(object):
         self.dilepton_veto              = num.zeros(1, dtype=int)
         self.extraelec_veto             = num.zeros(1, dtype=int)
         self.extramuon_veto             = num.zeros(1, dtype=int)
+
+        self.ngentauhads                = num.zeros(1, dtype=int)
+        self.ngentaus                   = num.zeros(1, dtype=int)
         self.weight                     = num.zeros(1, dtype=float)
 
 
@@ -261,4 +264,6 @@ class TreeProducerCommon(object):
         self.tree.Branch('extraelec_veto'              , self.extraelec_veto, 'extraelec_veto/I')
         self.tree.Branch('extramuon_veto'              , self.extramuon_veto, 'extramuon_veto/I')
 
+        self.tree.Branch('ngentauhads'                 , self.ngentauhads, 'ngentauhads/I')
+        self.tree.Branch('ngentaus'                    , self.ngentaus, 'ngentaus/I')
         self.tree.Branch('weight'                      , self.weight, 'weight/D')

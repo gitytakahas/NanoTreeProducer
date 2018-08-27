@@ -38,11 +38,44 @@ def getFileListDAS(dataset):
             files.append(l)
 	         
     return files 
+
+
+def getFileListPNFS(dataset):
+
+#    instance = 'prod/global'
+#    if dataset.find('USER')!=-1:
+#        instance = 'prod/phys03'
+    
+#    cmd='das_client --limit=0 --query="file dataset=%s instance=%s"'%(dataset,instance)
+
+    name = '/pnfs/psi.ch/cms/trivcat/store/user/ytakahas/' + dataset.replace('__','/')
+    cmd='ls %s'%(name)
+    print "Executing ",cmd
+    cmd_out = getoutput( cmd )
+    tmpList = cmd_out.split(os.linesep)
+    files = []
+    for l in tmpList:
+        if l.find(".root") != -1:
+            files.append(name + '/' + l.rstrip())
+	         
+    return files 
+
    
-def createJobs(f, outfolder,name,nchunks, channel):
+def createJobs(f, outfolder,name,nchunks, channel, pattern):
   infiles = []
+
   for files in f:
-    infiles.append("root://cms-xrd-global.cern.ch/"+files)
+
+#      if pattern.find('pnfs')!=-1:
+#          infiles.append("dcap://t3se01.psi.ch:22125/"+ pattern + '/' + files)
+#          infiles.append("root://cms-xrd-global.cern.ch/"+ pattern.replace('/pnfs/psi.ch/cms/trivcat','') + '/' + files)
+#      else:
+
+      if files.find('LQ')!=-1:
+          infiles.append("dcap://t3se01.psi.ch:22125/"+files)
+      else:
+          infiles.append("root://cms-xrd-global.cern.ch/"+files)
+
   cmd = 'python job.py %s %s %s %i %s \n'%(','.join(infiles), outfolder,name,nchunks, channel)
   print cmd
   jobs.write(cmd)
@@ -72,8 +105,8 @@ if __name__ == "__main__":
 
                         
         if line.find('#')!=-1: continue
-        if line.count('/')!=3:
-            continue 
+#        if line.count('/')!=3:
+#            continue 
 
 
         patterns.append(line.rstrip())
@@ -81,6 +114,10 @@ if __name__ == "__main__":
 
 	
     for pattern in patterns:
+
+        ispnfs = False
+        if pattern.find('pnfs')!=-1:
+            ispnfs = True
 
         if options.channel=='tautau':
             if pattern.find('/SingleMuon')!=-1 or pattern.find('/SingleElectron')!=-1: continue
@@ -91,19 +128,25 @@ if __name__ == "__main__":
         if options.channel=='eletau':
             if pattern.find('/SingleMuon')!=-1 or pattern.find('/Tau')!=-1: continue
 
-
             
         if options.sample!=None:
             if pattern.find(options.sample)==-1: continue
 
-       	files = getFileListDAS(pattern)
-#		print "FILELIST = ", files
-#                print pattern.split('/')
+        files = None
+        name = None
 
-        name = pattern.split("/")[1].replace("/","") + '__' + pattern.split("/")[2].replace("/","") + '__' + pattern.split("/")[3].replace("/","")
+        if ispnfs:
+            name = pattern.split("/")[8].replace("/","") + '__' + pattern.split("/")[9].replace("/","") + '__' + pattern.split("/")[10].replace("/","")
+#            files = getFileListPNFS(pattern)
+            files = getFileListPNFS(name)
+        else:
+            files = getFileListDAS(pattern)
+            name = pattern.split("/")[1].replace("/","") + '__' + pattern.split("/")[2].replace("/","") + '__' + pattern.split("/")[3].replace("/","")
 
-#		if sys.argv[1].find("data")!=-1: 
-#                    name = pattern.split("/")[2].replace("/","")
+
+        print pattern, 'filter = ', options.sample
+        print "FILELIST = ", files
+
         
         print 
         print "creating job file " ,'joblist/joblist%s.txt'%name
@@ -126,7 +169,7 @@ if __name__ == "__main__":
         
         for f in filelists:
 #			print "FILES = ",f
-            createJobs(f,outfolder,name,nChunks, options.channel)
+            createJobs(f,outfolder,name,nChunks, options.channel, pattern)
             nChunks = nChunks+1
             
         jobs.close()

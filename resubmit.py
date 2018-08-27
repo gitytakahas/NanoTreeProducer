@@ -10,7 +10,7 @@ import optparse
 parser = optparse.OptionParser()
 
 parser.add_option('-c', '--channel', action="store", type="string", default="tautau", dest='channel')
-parser.add_option('-n', '--njob', action="store", type=int, default=1, dest='njob')
+parser.add_option('-n', '--njob', action="store", type=int, default=5, dest='njob')
 parser.add_option('-m', '--make', action="store_true", default=False, dest='make')
 
 (options, args) = parser.parse_args() 
@@ -40,7 +40,7 @@ def getFileListDAS(dataset):
     if dataset.find('USER')!=-1:
         instance = 'prod/phys03'
     
-    cmd='das_client --limit=0 --query="file dataset=%s instance=%s"'%(dataset,instance)
+    cmd='das_client --limit=0 --query="file dataset=%s instance=%s status=*"'%(dataset,instance)
     cmd_out = getoutput( cmd )
     tmpList = cmd_out.split(os.linesep)
     files = []
@@ -51,10 +51,35 @@ def getFileListDAS(dataset):
     return files 
 
 
+def getFileListPNFS(dataset):
+
+#    instance = 'prod/global'
+#    if dataset.find('USER')!=-1:
+#        instance = 'prod/phys03'
+    
+#    cmd='das_client --limit=0 --query="file dataset=%s instance=%s"'%(dataset,instance)
+    name = '/pnfs/psi.ch/cms/trivcat/store/user/ytakahas/' + dataset.replace('__','/')
+    cmd='ls %s'%(name)
+    cmd_out = getoutput( cmd )
+    tmpList = cmd_out.split(os.linesep)
+    files = []
+    for l in tmpList:
+        if l.find(".root") != -1:
+            files.append(name + '/' + l.rstrip())
+
+#nanoAOD_LQ3ToTauB_Fall2017_5f_Madgraph_LO_pair-M2000_646.root	         
+#VectorLQ3ToTauB_Fall2017_5f_Madgraph_LO_pair_M1000__nanoAOD__v1/
+#/pnfs/psi.ch/cms/trivcat/store/user/ytakahas/VectorLQ3ToTauB_Fall2017_5f_Madgraph_LO_s_channel_M500/nanoAOD/v1/nanoAOD_VectorLQ3ToTauB_Fall2017_5f_Madgraph_LO_s_channel_M500_1.root
+
+    return files 
+
+
 def createJobs(f, outfolder,name,nchunks, channel, toWrite):
   infiles = []
   for files in f:
-    infiles.append("root://cms-xrd-global.cern.ch/"+files)
+#    infiles.append("root://cms-xrd-global.cern.ch/"+files)
+    infiles.append("dcap://t3se01.psi.ch:22125/"+files)
+#    dcap://t3se01.psi.ch:22125/
   cmd = 'python job.py %s %s %s %i %s \n'%(','.join(infiles), outfolder,name,nchunks, channel)
 #  print cmd
 
@@ -88,7 +113,17 @@ for directory in os.listdir("./"):
     
     total = 0
 
-    files = getFileListDAS('/' + directory.replace('__', '/'))
+    ispnfs = False
+    if directory.find('LQ')!=-1:
+        ispnfs = True
+
+    if ispnfs:
+#        print 'Here!'
+        files = getFileListPNFS(directory)
+    else:
+#        print 'No!'
+        files = getFileListDAS('/' + directory.replace('__', '/'))
+
     filelists = list(split_seq(files, options.njob))
         
     jobList = 'joblist/joblist%s_%s_retry.txt' % (directory, options.channel)
@@ -96,11 +131,16 @@ for directory in os.listdir("./"):
 
     ids = []
 
+#    print 'ispnfs = ', ispnfs
+#    print filelists
+    
+
     for file2check in filelist:
         
         f = TFile(file2check, "read")
 
         if f.GetListOfKeys().Contains("tree"): continue
+
 
         total += 1
         
@@ -123,11 +163,14 @@ for directory in os.listdir("./"):
 		
     jobs.close()
 
+    if len(ids)==0:
+        print bcolors.BOLD + bcolors.OKBLUE + '[OK] : ' + directory + bcolors.ENDC, ids
+    else:
+        print bcolors.BOLD + bcolors.FAIL + '[NG] : ' + directory + ', ' + str(len(ids)) + '/' + str(len(filelist)) + ' ... broken' + bcolors.ENDC, ids
 
-    print bcolors.BOLD + bcolors.OKBLUE + 'Submmited ' + str(len(ids)) + 'jobs from ' + directory + bcolors.ENDC, ids
-
-    if options.make:
+    if options.make and len(ids)!=0:
         submitJobs(jobList, total, directory, batchSystem)
+
 
             
 #    if flag:

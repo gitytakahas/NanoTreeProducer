@@ -33,13 +33,11 @@ class TauTauProducer(Module):
         self.Trigger = 1
         self.GoodTaus = 2
         self.GoodDiLepton = 3
-
-        self.Nocut_GT = 20
-        self.Trigger_GT = 21
-        self.GoodTaus_GT = 22
-        self.GoodDiLepton_GT = 23
-
         self.TotalWeighted = 15
+
+        self.out.trg_doubletau           = num.zeros(1, dtype=int)
+        self.out.tree.Branch('trg_doubletau'             , self.out.trg_doubletau, 'trg_doubletau/I')
+
 
     def beginJob(self):
         pass
@@ -63,100 +61,8 @@ class TauTauProducer(Module):
 #        muons = Collection(event, "Muon")
 
 
-
-        ngentauhads = 0
-
-        print '-'*80
-
-        ngentaus = 0
-
-        if not self.isData:
-
-            for igp in range(event.nGenPart):
-
-                if abs(event.GenPart_pdgId[igp])==15 and event.GenPart_status[igp]==2:
-                    
-                    genflag = event.GenPart_statusFlags[igp]
-
-                    binary = format(genflag,'b').zfill(15)
-
-                    # 0 : isPrompt
-                    # 1 : isDecayedLeptonHadron
-                    # 2 : isTauDecayProduct
-                    # 3 : isPromptTauDecayProduct
-                    # 4 : isDirectTauDecayProduct
-                    # 5 : isDirectPromptTauDecayProduct
-                    # 6 : isDirectHadronDecayProduct
-                    # 7 : isHardProcess
-                    # 8 : fromHardProcess
-                    # 9 : isHardProcessTauDecayProduct
-                    # 10 : isDirectHardProcessTauDecayProduct
-                    # 11 : fromHardProcessBeforeFSR
-                    # 12 : isFirstCopy
-                    # 13 : isLastCopy
-                    # 14 : isLastCopyBeforeFSR
-
-                    if int(binary[14])==0: continue
-
-                    if int(binary[6])==0: continue
-
-
-                    ngentaus += 1
-
-                    print 'Tau found with status = 2 (pt, eta) = ', event.GenPart_pt[igp], event.GenPart_eta[igp], event.GenPart_statusFlags[igp]
-
-                    _pdg_ = -1
-                    _idx_ = event.GenPart_genPartIdxMother[igp]
-#                    _status_ = -1
-                    flag_resonance = False
-
-                    while abs(_pdg_) not in [9000002, 9000006]:
-
-                        if _idx_==-1: break
-
-                        _pdg_ = event.GenPart_pdgId[_idx_]
-#                        _status_ = event.GenPart_status[_idx_]
-                        _idx_ = event.GenPart_genPartIdxMother[_idx_]
-
-
-                        if abs(_pdg_) > 30 and abs(_pdg_) not in [9000002, 9000006]: 
-                            flag_resonance = True
-
-#                        print '\t (pdg, mother id) = ', _pdg_, _status_, _idx_
-
-                        
-                    if flag_resonance: continue
-
-                    _dr_ = 100.
-                    for igvt in range(event.nGenVisTau):
-                        dr = deltaR(event.GenPart_eta[igp], event.GenPart_phi[igp], event.GenVisTau_eta[igvt], event.GenVisTau_phi[igvt])
-
-#                        print dr, _dr_, event.GenPart_eta[igp], event.GenPart_phi[igp], event.GenVisTau_eta[igvt], event.GenVisTau_phi[igvt]
-                        
-                        if _dr_ > dr:
-                            _dr_ = dr
-                            
-#
-#                    print 'match !',_pdg_, event.nGenVisTau,  _dr_
-                    if _dr_ < 0.1:
-                        ngentauhads += 1
-
-#            for igvt in range(event.nGenVisTau):
-#                print 'status = ', event.GenVisTau_status[igvt], 'mother ID = ', event.GenVisTau_genPartIdxMother[igvt], 'pt = ', event.GenVisTau_pt[igvt], ', eta = ', event.GenVisTau_eta[igvt]
-#                ngentauhads += 1
-                
-
-        if ngentaus != 2:
-           print 'WOW!!!!!!!!!!!!!!!'
-
-#        print ngentaus
-
         #####################################
         self.out.h_cutflow.Fill(self.Nocut)
-        
-        if ngentauhads == 2:
-            self.out.h_cutflow.Fill(self.Nocut_GT)
-
         #####################################
 
         #####################################
@@ -171,18 +77,14 @@ class TauTauProducer(Module):
 
 #        print 'trig = ', event.HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, event.HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, event.HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg
 
-        if event.HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg > 0.5 or event.HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg > 0.5 or event.HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg > 0.5:
-            pass
-        else:
-            return False
+#        if event.HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg > 0.5 or event.HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg > 0.5 or event.HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg > 0.5:
+#            pass
+#        else:
+#            return False
 
 
         #####################################
         self.out.h_cutflow.Fill(self.Trigger)
-
-        if ngentauhads == 2:
-            self.out.h_cutflow.Fill(self.Trigger_GT)
-
         #####################################
 
         idx_goodtaus = []
@@ -192,7 +94,8 @@ class TauTauProducer(Module):
             if event.Tau_pt[itau] < 40: continue
             if abs(event.Tau_eta[itau]) > 2.1: continue
             if abs(event.Tau_dz[itau]) > 0.2: continue
-            if event.Tau_decayMode[itau] not in [0,1,10]: continue
+#            if event.Tau_decayMode[itau] not in [0,1,10]: continue
+            if event.Tau_idDecayMode[itau] < 0.5: continue
             if abs(event.Tau_charge[itau])!=1: continue
 
 #            print itau, 'decay mode = ', event.Tau_decayMode[itau] 
@@ -205,10 +108,6 @@ class TauTauProducer(Module):
 
         #####################################
         self.out.h_cutflow.Fill(self.GoodTaus)
-
-        if ngentauhads == 2:
-            self.out.h_cutflow.Fill(self.GoodTaus_GT)
-
         #####################################
 
         
@@ -235,10 +134,6 @@ class TauTauProducer(Module):
 
         #####################################
         self.out.h_cutflow.Fill(self.GoodDiLepton)
-
-        if ngentauhads == 2:
-            self.out.h_cutflow.Fill(self.GoodDiLepton_GT)
-
         #####################################
 
         dilepton = bestDiLepton(dileptons)
@@ -536,14 +431,13 @@ class TauTauProducer(Module):
 
         diTauLeg1SF = self.tauSFs.getDiTauScaleFactor( self.out.pt_1, self.out.eta_1, self.out.phi_1 )
         diTauLeg2SF = self.tauSFs.getDiTauScaleFactor( self.out.pt_2, self.out.eta_2, self.out.phi_2 )
-        
-        self.out.ngentauhads[0] = ngentauhads
-        self.out.ngentaus[0] = ngentaus
+
         self.out.weight[0]  =  diTauLeg1SF*diTauLeg2SF
 
-    
+        self.out.trg_doubletau[0] = (event.HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg > 0.5 or event.HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg > 0.5 or event.HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg > 0.5)
 
         self.out.tree.Fill() 
+
         return True
 
 

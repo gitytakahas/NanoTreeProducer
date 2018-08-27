@@ -37,33 +37,38 @@ print 'DataType = ', DataType
 if DataType=='data':
     filelist = ['root://cms-xrd-global.cern.ch//store/data/Run2017B/Tau/NANOAOD/31Mar2018-v1/10000/04463969-D044-E811-8DC1-0242AC130002.root']
 else:
-#    filelist = ['root://cms-xrd-global.cern.ch//store/mc/RunIIFall17NanoAOD/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/70000/BEA974A4-3E42-E811-85BF-3417EBE51A24.root']
-#    filelist = ['root://cms-xrd-global.cern.ch//store/mc/RunIIFall17NanoAOD/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/00000/88F83F15-B242-E811-808E-001E67792488.root',
 #    filelist = ['root://cms-xrd-global.cern.ch//store/mc/RunIIFall17NanoAOD/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/10000/0A5AB04B-4B42-E811-AD7F-A4BF0112BDE6.root']
 #    filelist = ['root://cms-xrd-global.cern.ch//store/mc/RunIIFall17NanoAOD/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/20000/82C67179-0942-E811-9BA7-001E67FA3920.root']
-    filelist = ['root://cms-xrd-global.cern.ch//store/mc/RunIIFall17NanoAOD/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/00000/5E621211-8B42-E811-9903-001E67F8FA2E.root']
-#    filelist = ['root://cms-xrd-global.cern.ch//store/user/ytakahas/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/NanoTest_20180507_W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/180509_174102/0000/test94X_NANO_45.root']
-#    filelist = ['root://cms-xrd-global.cern.ch//store/mc/RunIIFall17NanoAOD/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/70000/B28E4243-3245-E811-B18F-001E67E71BAA.root']
+#    filelist = ['root://cms-xrd-global.cern.ch//store/mc/RunIIFall17NanoAOD/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/00000/5E621211-8B42-E811-9903-001E67F8FA2E.root']
 
-#    filelist = ['root://cms-xrd-global.cern.ch//store/user/ytakahas/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/NanoTest_20180507_W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/180509_174145/0000/test94X_NANO_48.root']
-#                'root://cms-xrd-global.cern.ch//store/user/ytakahas/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/NanoTest_20180507_W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/180509_174145/0000/test94X_NANO_57.root']
+
+#    filelist = ['dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/ytakahas/LQ3ToTauB_Fall2017_5f_Madgraph_LO_pair-M500/nanoAOD/v1/nanoAOD_LQ3ToTauB_Fall2017_5f_Madgraph_LO_pair-M500_1602.root']
+    filelist = ['dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/ytakahas/VectorLQ3ToTauB_Fall2017_5f_Madgraph_LO_pair_M1000/nanoAOD/v1/nanoAOD_VectorLQ3ToTauB_Fall2017_5f_Madgraph_LO_pair_M1000_1036.root',
+                'dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/ytakahas/VectorLQ3ToTauB_Fall2017_5f_Madgraph_LO_pair_M1000/nanoAOD/v1/nanoAOD_VectorLQ3ToTauB_Fall2017_5f_Madgraph_LO_pair_M1000_105.root',
+                'dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/ytakahas/VectorLQ3ToTauB_Fall2017_5f_Madgraph_LO_pair_M1000/nanoAOD/v1/nanoAOD_VectorLQ3ToTauB_Fall2017_5f_Madgraph_LO_pair_M1000_1059.root',
+                ]
+#    filelist = ['dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/ytakahas/VectorLQ3ToTauB_Fall2017_5f_Madgraph_LO_pair_M500/nanoAOD/v1/nanoAOD_VectorLQ3ToTauB_Fall2017_5f_Madgraph_LO_pair_M500_133.root']
+
 
 _postfix = channel + '.root'
 
 if channel == 'tautau':
 
+#    from TauTauModule_sync import *
     from TauTauModule import *
 
     module2run = lambda : TauTauProducer(_postfix, DataType)
 
 elif channel == 'mutau':
 
+#    from MuTauModule_sync import *
     from MuTauModule import *
 
     module2run = lambda : MuTauProducer(_postfix, DataType)
 
 elif channel == 'eletau':
 
+#    from EleTauModule_sync import *
     from EleTauModule import *
 
     module2run = lambda : EleTauProducer(_postfix, DataType)

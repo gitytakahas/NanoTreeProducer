@@ -51,7 +51,8 @@ for directory in os.listdir("./"):
             flag = True
 
             rmcmd = 'rm %s' %file2check
-            os.system(rmcmd)
+            print rmcmd
+#            os.system(rmcmd)
 
 
     if flag:
@@ -81,9 +82,9 @@ for directory in os.listdir("./"):
 
             if directory.find('LQ3')!=-1:
                 skimcmd = 'python extractTrees.py -c ' + options.channel + ' -f ' + directory + '/' + options.channel + '.root'
-                os.system(skimcmd)
+#                os.system(skimcmd)
                 rmcmd = 'rm ' + directory + '/*_' + options.channel + '.root'
-                os.system(rmcmd)
+#                os.system(rmcmd)
                 continue
 
             dasname = directory.replace('__', '/')
@@ -108,11 +109,11 @@ for directory in os.listdir("./"):
                 print bcolors.BOLD + bcolors.FAIL + '\t [NG] DAS entries = ' + str(int(total_das)) + ' Tree produced = ' + str(int(total_processed)) + '(frac = {0:.2f}'.format(fraction) + ')' + bcolors.ENDC
 
             skimcmd = 'python extractTrees.py -c ' + options.channel + ' -f ' + directory + '/' + options.channel + '.root'
-            os.system(skimcmd)
+#            os.system(skimcmd)
                 
             # cleaning up ...
             rmcmd = 'rm ' + directory + '/*_' + options.channel + '.root'
-            os.system(rmcmd)
+#            os.system(rmcmd)
 
 
 
